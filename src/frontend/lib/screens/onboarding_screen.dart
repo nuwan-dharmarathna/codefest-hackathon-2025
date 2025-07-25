@@ -111,7 +111,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         ),
         SizedBox(height: 10),
         Positioned(
-          top: MediaQuery.of(context).size.height * 0.08,
+          top: MediaQuery.of(context).size.height * 0.05,
           left: 0,
           right: 0,
           child: Padding(

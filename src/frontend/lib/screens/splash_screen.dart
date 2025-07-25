@@ -44,11 +44,6 @@ class _SplashScreenState extends State<SplashScreen> {
                 SizedBox(height: 40),
                 Text(
                   "Your Digital Bridge",
-                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 10),
-                Text(
-                  "To Fairer Commerce.",
                   style: TextStyle(
                     fontSize: 30,
                     fontWeight: FontWeight.bold,
@@ -56,6 +51,11 @@ class _SplashScreenState extends State<SplashScreen> {
                       context,
                     ).colorScheme.onSurface.withOpacity(0.6),
                   ),
+                ),
+                SizedBox(height: 10),
+                Text(
+                  "To Fairer Commerce.",
+                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
