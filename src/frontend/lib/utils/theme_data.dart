@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 ThemeData lightMode = ThemeData(
+  fontFamily: GoogleFonts.lato().fontFamily,
   colorScheme: ColorScheme.light(
     primary: Color(0xFF2E7D32), // Deep green (trust, growth)
     secondary: Color(0xFFF57F17), // Warm amber (energy, Sri Lankan influence)
-    surface: Color(0xFFFFFFFF), // Pure white
-    background: Color(0xFFF5F5F5), // Light gray background
+    surface: Color(0xFFFFFFFF), // Light gray background
     error: Color(0xFFC62828), // Alert red
     onPrimary: Color(0xFFFFFFFF), // White text on primary
     onSecondary: Color(0xFF000000), // Black text on secondary
     onSurface: Color(0xFF212121), // Dark gray text
-    onBackground: Color(0xFF212121), // Dark gray text
     onError: Color(0xFFFFFFFF), // White text on error
   ),
   textTheme: TextTheme(
@@ -29,16 +29,15 @@ ThemeData lightMode = ThemeData(
 );
 
 ThemeData darkMode = ThemeData(
+  fontFamily: GoogleFonts.lato().fontFamily,
   colorScheme: ColorScheme.dark(
     primary: Color(0xFF81C784), // Soft green
     secondary: Color(0xFFFFB74D), // Muted amber
-    surface: Color(0xFF121212), // Very dark gray
-    background: Color(0xFF1E1E1E), // Slightly lighter dark gray
+    surface: Color(0xFF121212), // Slightly lighter dark gray
     error: Color(0xFFEF5350), // Soft red
     onPrimary: Color(0xFF000000), // Black text on primary
     onSecondary: Color(0xFF000000), // Black text on secondary
     onSurface: Color(0xFFFFFFFF), // White text
-    onBackground: Color(0xFFFFFFFF), // White text
     onError: Color(0xFF000000), // Black text on error
   ),
   textTheme: TextTheme(
