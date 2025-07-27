@@ -1,13 +1,14 @@
 import 'package:frontend/routers/router_names.dart';
 import 'package:frontend/screens/onboarding_screen.dart';
-import 'package:frontend/screens/signIn_screen.dart';
-import 'package:frontend/screens/signUp_screen.dart';
+import 'package:frontend/screens/sign_in_screen.dart';
+import 'package:frontend/screens/sign_up_screen.dart';
 import 'package:frontend/screens/splash_screen.dart';
 import 'package:frontend/screens/welcome_screen.dart';
 import 'package:go_router/go_router.dart';
 
 class RouterClass {
   final router = GoRouter(
+    initialLocation: "/signUp",
     routes: [
       GoRoute(
         path: "/",

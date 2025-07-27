@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/data/onboarding_data.dart';
 import 'package:frontend/models/onboarding_model.dart';
-import 'package:frontend/routers/router.dart';
 import 'package:frontend/routers/router_names.dart';
-import 'package:frontend/screens/welcome_screen.dart';
 import 'package:frontend/widgets/custom_button.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
