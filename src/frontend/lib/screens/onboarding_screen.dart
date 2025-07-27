@@ -111,7 +111,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         ),
         SizedBox(height: 10),
         Positioned(
-          top: MediaQuery.of(context).size.height * 0.05,
+          top: MediaQuery.of(context).size.height * 0.1,
           left: 0,
           right: 0,
           child: Padding(
@@ -123,7 +123,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 Text(
                   onboarding.description,
                   style: TextStyle(
-                    fontSize: 33,
+                    fontSize: 40,
                     fontWeight: FontWeight.w600,
                     color: Colors.white,
                   ),
@@ -134,7 +134,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 Text(
                   onboarding.description_2!,
                   style: TextStyle(
-                    fontSize: 30,
+                    fontSize: 35,
                     fontWeight: FontWeight.w600,
                     color: Colors.white,
                   ),
@@ -142,14 +142,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 const SizedBox(
                   height: 15,
                 ), // Add some vertical spacing between texts
-                Text(
-                  onboarding.description_3!,
-                  style: TextStyle(
-                    fontSize: 27,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
               ],
             ),
           ),
