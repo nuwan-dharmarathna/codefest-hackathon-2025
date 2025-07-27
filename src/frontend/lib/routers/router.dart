@@ -7,11 +7,12 @@ import 'package:frontend/screens/sign_in_screen.dart';
 import 'package:frontend/screens/sign_up_screen.dart';
 import 'package:frontend/screens/splash_screen.dart';
 import 'package:frontend/screens/welcome_screen.dart';
+import 'package:frontend/widgets/otp_form.dart';
 import 'package:go_router/go_router.dart';
 
 class RouterClass {
   final router = GoRouter(
-    initialLocation: "/signUp",
+    initialLocation: "/",
     routes: [
       GoRoute(
         path: "/",
@@ -56,6 +57,11 @@ class RouterClass {
             builder: (context, state) => BuyerInfoPage(),
           ),
         ],
+      ),
+      GoRoute(
+        path: "/otp",
+        name: RouterNames.otp,
+        builder: (context, state) => OtpForm(),
       ),
     ],
   );
