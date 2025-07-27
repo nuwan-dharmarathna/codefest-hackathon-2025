@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/screens/splash_screen.dart';
+import 'package:frontend/routers/router.dart';
 import 'package:frontend/utils/theme_data.dart';
 
 void main() {
@@ -11,12 +11,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: "GoviChain",
       debugShowCheckedModeBanner: false,
       theme: lightMode,
       darkTheme: darkMode,
-      home: SplashScreen(),
+      routerConfig: RouterClass().router,
     );
   }
 }

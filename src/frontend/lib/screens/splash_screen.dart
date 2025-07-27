@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/routers/router_names.dart';
 import 'package:frontend/screens/onboarding_screen.dart';
+import 'package:go_router/go_router.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -16,12 +18,8 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void openOnboardingSection() async {
-    await Future.delayed(Duration(seconds: 3));
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => OnboardingScreen()),
-      (route) => false,
-    );
+    await Future.delayed(Duration(seconds: 2));
+    GoRouter.of(context).pushNamed(RouterNames.onboarding);
   }
 
   @override
