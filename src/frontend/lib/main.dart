@@ -1,9 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/providers/registration_provider.dart';
 import 'package:frontend/routers/router.dart';
 import 'package:frontend/utils/theme_data.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => RegistrationProvider()),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

@@ -1,22 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/providers/registration_provider.dart';
+import 'package:frontend/screens/registration/user_type_page.dart';
+import 'package:provider/provider.dart';
 
-class SignupScreen extends StatefulWidget {
+class SignupScreen extends StatelessWidget {
   const SignupScreen({super.key});
 
   @override
-  State<SignupScreen> createState() => _SignupScreenState();
-}
-
-class _SignupScreenState extends State<SignupScreen> {
-  // page indicator controller
-  final PageController _controller = PageController();
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      ),
-      body: Column(children: [Text("Registration Page")]),
+    return ChangeNotifierProvider(
+      create: (context) => RegistrationProvider(),
+      child: UserTypePage(),
     );
   }
 }

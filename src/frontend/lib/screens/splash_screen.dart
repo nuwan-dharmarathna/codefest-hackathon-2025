@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/routers/router_names.dart';
-import 'package:frontend/screens/onboarding_screen.dart';
 import 'package:go_router/go_router.dart';
 
 class SplashScreen extends StatefulWidget {

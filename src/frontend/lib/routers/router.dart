@@ -1,5 +1,8 @@
 import 'package:frontend/routers/router_names.dart';
 import 'package:frontend/screens/onboarding_screen.dart';
+import 'package:frontend/screens/registration/buyer_info_page.dart';
+import 'package:frontend/screens/registration/seller_category_page.dart';
+import 'package:frontend/screens/registration/seller_info_page.dart';
 import 'package:frontend/screens/sign_in_screen.dart';
 import 'package:frontend/screens/sign_up_screen.dart';
 import 'package:frontend/screens/splash_screen.dart';
@@ -34,6 +37,25 @@ class RouterClass {
         path: "/signUp",
         name: RouterNames.signUp,
         builder: (context, state) => SignupScreen(),
+        routes: [
+          GoRoute(
+            path: "/sellerCategory",
+            name: RouterNames.sellerCategory,
+            builder: (context, state) => SellerCategoryPage(),
+            routes: [
+              GoRoute(
+                path: "/sellerInfo",
+                name: RouterNames.sellerInfo,
+                builder: (context, state) => SellerInfoPage(),
+              ),
+            ],
+          ),
+          GoRoute(
+            path: "/buyerInfo",
+            name: RouterNames.buyerInfo,
+            builder: (context, state) => BuyerInfoPage(),
+          ),
+        ],
       ),
     ],
   );
