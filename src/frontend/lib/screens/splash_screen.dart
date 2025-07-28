@@ -17,7 +17,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void openOnboardingSection() async {
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(Duration(seconds: 3));
     GoRouter.of(context).pushNamed(RouterNames.onboarding);
   }
 
