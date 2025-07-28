@@ -1,4 +1,5 @@
 import 'package:frontend/routers/router_names.dart';
+import 'package:frontend/screens/buyer/buyer_main_screen.dart';
 import 'package:frontend/screens/onboarding_screen.dart';
 import 'package:frontend/screens/registration/buyer_info_page.dart';
 import 'package:frontend/screens/registration/select_location_page.dart';
@@ -13,7 +14,7 @@ import 'package:go_router/go_router.dart';
 
 class RouterClass {
   final router = GoRouter(
-    initialLocation: "/selectLocation",
+    initialLocation: "/buyer",
     routes: [
       GoRoute(
         path: "/",
@@ -68,6 +69,11 @@ class RouterClass {
         path: "/selectLocation",
         name: RouterNames.selectLocation,
         builder: (context, state) => SelectLocationPage(),
+      ),
+      GoRoute(
+        path: "/buyer",
+        name: RouterNames.buyer,
+        builder: (context, state) => BuyerMainScreen(),
       ),
     ],
   );

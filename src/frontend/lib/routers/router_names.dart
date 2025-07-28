@@ -10,4 +10,9 @@ class RouterNames {
   static const String sellerInfo = "/sellerInfo";
   static const String otp = "/otp";
   static const String selectLocation = "/selectLocation";
+  static const String buyer = "/buyer";
+  static const String buyerHomePage = "/buyerHomePage";
+  static const String buyerTenders = "/buyerTenders";
+  static const String buyerFavourites = "/buyerFavourites";
+  static const String buyerProfile = "/buyerProfile";
 }

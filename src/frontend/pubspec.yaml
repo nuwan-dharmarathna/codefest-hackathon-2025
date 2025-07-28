@@ -35,6 +35,10 @@ flutter:
     - assets/icons/meat.png
     - assets/icons/seller.png
     - assets/icons/map.png
+    - assets/icons/home.png
+    - assets/icons/tender.png
+    - assets/icons/heart.png
+    - assets/icons/user.png
     - assets/images/logo_dark.png
     - assets/images/logo_light.png
     - assets/images/women_hands.jpeg
