@@ -14,9 +14,97 @@ ThemeData lightMode = ThemeData(
     onError: Color(0xFFFFFFFF), // White text on error
   ),
   textTheme: TextTheme(
-    displayLarge: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-    bodyLarge: TextStyle(fontSize: 16, color: Color(0xFF424242)),
-    labelLarge: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+    // Display Text (Large Headings)
+    displayLarge: TextStyle(
+      fontSize: 28.0,
+      fontWeight: FontWeight.w700,
+      letterSpacing: -0.5,
+      height: 1.2,
+    ),
+    displayMedium: TextStyle(
+      fontSize: 24.0,
+      fontWeight: FontWeight.w600,
+      letterSpacing: -0.3,
+      height: 1.25,
+    ),
+    displaySmall: TextStyle(
+      fontSize: 20.0,
+      fontWeight: FontWeight.w600,
+      letterSpacing: -0.2,
+      height: 1.3,
+    ),
+
+    // Headlines (Page/Section Titles)
+    headlineLarge: TextStyle(
+      fontSize: 22.0,
+      fontWeight: FontWeight.w600,
+      letterSpacing: -0.2,
+      height: 1.3,
+    ),
+    headlineMedium: TextStyle(
+      fontSize: 18.0,
+      fontWeight: FontWeight.w600,
+      height: 1.35,
+    ),
+    headlineSmall: TextStyle(
+      fontSize: 16.0,
+      fontWeight: FontWeight.w600,
+      height: 1.4,
+    ),
+
+    // Titles (Card Titles, List Headers)
+    titleLarge: TextStyle(
+      fontSize: 18.0,
+      fontWeight: FontWeight.w500,
+      height: 1.4,
+    ),
+    titleMedium: TextStyle(
+      fontSize: 16.0,
+      fontWeight: FontWeight.w500,
+      height: 1.4,
+    ),
+    titleSmall: TextStyle(
+      fontSize: 14.0,
+      fontWeight: FontWeight.w500,
+      height: 1.4,
+    ),
+
+    // Body Text (Primary Content)
+    bodyLarge: TextStyle(
+      fontSize: 16.0,
+      fontWeight: FontWeight.w400,
+      height: 1.5,
+    ),
+    bodyMedium: TextStyle(
+      fontSize: 14.0,
+      fontWeight: FontWeight.w400,
+      height: 1.5,
+    ),
+    bodySmall: TextStyle(
+      fontSize: 12.0,
+      fontWeight: FontWeight.w400,
+      height: 1.5,
+    ),
+
+    // Labels (Buttons, Form Fields)
+    labelLarge: TextStyle(
+      fontSize: 16.0,
+      fontWeight: FontWeight.w500,
+      letterSpacing: 0.5,
+      height: 1.4,
+    ),
+    labelMedium: TextStyle(
+      fontSize: 14.0,
+      fontWeight: FontWeight.w500,
+      letterSpacing: 0.3,
+      height: 1.4,
+    ),
+    labelSmall: TextStyle(
+      fontSize: 12.0,
+      fontWeight: FontWeight.w500,
+      letterSpacing: 0.2,
+      height: 1.4,
+    ),
   ),
   appBarTheme: AppBarTheme(
     backgroundColor: Color(0xFF2E7D32),
@@ -41,9 +129,97 @@ ThemeData darkMode = ThemeData(
     onError: Color(0xFF000000), // Black text on error
   ),
   textTheme: TextTheme(
-    displayLarge: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-    bodyLarge: TextStyle(fontSize: 16, color: Color(0xFFE0E0E0)),
-    labelLarge: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+    // Display Text (Large Headings)
+    displayLarge: TextStyle(
+      fontSize: 28.0,
+      fontWeight: FontWeight.w700,
+      letterSpacing: -0.5,
+      height: 1.2,
+    ),
+    displayMedium: TextStyle(
+      fontSize: 24.0,
+      fontWeight: FontWeight.w600,
+      letterSpacing: -0.3,
+      height: 1.25,
+    ),
+    displaySmall: TextStyle(
+      fontSize: 20.0,
+      fontWeight: FontWeight.w600,
+      letterSpacing: -0.2,
+      height: 1.3,
+    ),
+
+    // Headlines (Page/Section Titles)
+    headlineLarge: TextStyle(
+      fontSize: 22.0,
+      fontWeight: FontWeight.w600,
+      letterSpacing: -0.2,
+      height: 1.3,
+    ),
+    headlineMedium: TextStyle(
+      fontSize: 18.0,
+      fontWeight: FontWeight.w600,
+      height: 1.35,
+    ),
+    headlineSmall: TextStyle(
+      fontSize: 16.0,
+      fontWeight: FontWeight.w600,
+      height: 1.4,
+    ),
+
+    // Titles (Card Titles, List Headers)
+    titleLarge: TextStyle(
+      fontSize: 18.0,
+      fontWeight: FontWeight.w500,
+      height: 1.4,
+    ),
+    titleMedium: TextStyle(
+      fontSize: 16.0,
+      fontWeight: FontWeight.w500,
+      height: 1.4,
+    ),
+    titleSmall: TextStyle(
+      fontSize: 14.0,
+      fontWeight: FontWeight.w500,
+      height: 1.4,
+    ),
+
+    // Body Text (Primary Content)
+    bodyLarge: TextStyle(
+      fontSize: 16.0,
+      fontWeight: FontWeight.w400,
+      height: 1.5,
+    ),
+    bodyMedium: TextStyle(
+      fontSize: 14.0,
+      fontWeight: FontWeight.w400,
+      height: 1.5,
+    ),
+    bodySmall: TextStyle(
+      fontSize: 12.0,
+      fontWeight: FontWeight.w400,
+      height: 1.5,
+    ),
+
+    // Labels (Buttons, Form Fields)
+    labelLarge: TextStyle(
+      fontSize: 16.0,
+      fontWeight: FontWeight.w500,
+      letterSpacing: 0.5,
+      height: 1.4,
+    ),
+    labelMedium: TextStyle(
+      fontSize: 14.0,
+      fontWeight: FontWeight.w500,
+      letterSpacing: 0.3,
+      height: 1.4,
+    ),
+    labelSmall: TextStyle(
+      fontSize: 12.0,
+      fontWeight: FontWeight.w500,
+      letterSpacing: 0.2,
+      height: 1.4,
+    ),
   ),
   appBarTheme: AppBarTheme(
     backgroundColor: Color(0xFF1B5E20),
