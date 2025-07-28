@@ -12,7 +12,7 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
-    openOnboardingSection();
+    // openOnboardingSection();
     super.initState();
   }
 
@@ -26,36 +26,18 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       body: SafeArea(
         child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ClipRRect(
-                  child: Image.asset(
-                    "assets/images/logo.png",
+          child: ClipRRect(
+            child: Theme.of(context).brightness == Brightness.light
+                ? Image.asset(
+                    "assets/images/logo_light.png",
                     fit: BoxFit.cover,
-                    width: MediaQuery.of(context).size.width * 0.7,
+                    width: MediaQuery.of(context).size.width * 0.9,
+                  )
+                : Image.asset(
+                    "assets/images/logo_dark.png",
+                    fit: BoxFit.cover,
+                    width: MediaQuery.of(context).size.width * 0.9,
                   ),
-                ),
-                SizedBox(height: 40),
-                Text(
-                  "Your Digital Bridge",
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.onSurface.withOpacity(0.6),
-                  ),
-                ),
-                SizedBox(height: 10),
-                Text(
-                  "To Fairer Commerce.",
-                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
           ),
         ),
       ),
