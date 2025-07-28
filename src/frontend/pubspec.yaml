@@ -34,6 +34,7 @@ flutter:
     - assets/icons/juicer.png
     - assets/icons/meat.png
     - assets/icons/seller.png
+    - assets/icons/map.png
     - assets/images/logo_dark.png
     - assets/images/logo_light.png
     - assets/images/women_hands.jpeg

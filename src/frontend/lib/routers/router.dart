@@ -1,6 +1,7 @@
 import 'package:frontend/routers/router_names.dart';
 import 'package:frontend/screens/onboarding_screen.dart';
 import 'package:frontend/screens/registration/buyer_info_page.dart';
+import 'package:frontend/screens/registration/select_location_page.dart';
 import 'package:frontend/screens/registration/seller_category_page.dart';
 import 'package:frontend/screens/registration/seller_info_page.dart';
 import 'package:frontend/screens/sign_in_screen.dart';
@@ -12,7 +13,7 @@ import 'package:go_router/go_router.dart';
 
 class RouterClass {
   final router = GoRouter(
-    initialLocation: "/",
+    initialLocation: "/selectLocation",
     routes: [
       GoRoute(
         path: "/",
@@ -62,6 +63,11 @@ class RouterClass {
         path: "/otp",
         name: RouterNames.otp,
         builder: (context, state) => OtpForm(),
+      ),
+      GoRoute(
+        path: "/selectLocation",
+        name: RouterNames.selectLocation,
+        builder: (context, state) => SelectLocationPage(),
       ),
     ],
   );

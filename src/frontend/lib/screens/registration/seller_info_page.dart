@@ -239,10 +239,6 @@ class _SellerInfoPageState extends State<SellerInfoPage> {
                   child: Text("Sumbit", style: TextStyle(fontSize: 18)),
                 ),
               ),
-              // ElevatedButton(
-              //   onPressed: _submitForm,
-              //   child: const Text('Submit'),
-              // ),
             ],
           ),
         ),
