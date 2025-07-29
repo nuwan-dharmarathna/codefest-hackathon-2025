@@ -15,8 +15,11 @@ router.use(
     authController.restrictTo('seller')
 );
 
-router.route('/').post(advertisementController.createAdvertisement);
+router.route('/')
+  .post(advertisementController.createAdvertisement);
 
-router.route('/:id').patch(advertisementController.updateAdvertisement).delete(advertisementController.deleteAdvertisement);
+router.route('/:id')
+  .patch(advertisementController.updateAdvertisement)
+  .delete(advertisementController.deleteAdvertisement);
 
 module.exports = router;
