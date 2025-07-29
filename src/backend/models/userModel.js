@@ -107,6 +107,19 @@ BaseUserSchema.methods.comparePassword = async function(candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
+BaseUserSchema.methods.changepasswordAfter = function (JWTTimestamp) {
+  if (this.passwordChangedAt) {
+    const changeTimeStamp = parseInt(
+      this.passwordChangedAt.getTime() / 1000,
+      10,
+    );
+    return JWTTimestamp < changeTimeStamp;
+  }
+
+  // false means password not changed
+  return false;
+};
+
 // Prevent creating base Users directly
 BaseUserSchema.pre('save', function(next) {
   if (!this.role) {
@@ -128,10 +141,6 @@ const Seller = User.discriminator('seller',
       type: Schema.Types.ObjectId,
       ref: 'SellerCategory',
       required: [true, 'Category is required for sellers']
-    },
-    subCategory: {
-      type: String,
-      required: [true, 'Subcategory is required for sellers']
     },
     businessName: {
       type: String,

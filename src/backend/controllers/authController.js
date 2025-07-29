@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const {User, Buyer, Seller} = require('../models/userModel');
 const {SellerCategory} = require('../models/sellerCategoryModel');
+const { promisify } = require('util');
 
 
 const AppError = require('../utils/appError');
@@ -8,25 +9,33 @@ const catchAsync = require('../utils/catchAsync');
 
 const signToken = (id, role) => {
     return jwt.sign(
-        {id, role},
+        { id, role },
         process.env.JWT_SECRET,
         { expiresIn: process.env.JWT_EXPIRES_IN || '30d' }
     );
 };
 
 const createSendToken = (user, statusCode, res) => {
-    const token = signToken(user._id, user.role);
+  const token = signToken(user._id, user.role);
+  
+  // Remove password from output
+  user.password = undefined;
 
-    // remove parrword from output
-    user.password = undefined;
+  // Send token in both response and cookie
+  res.cookie('jwt', token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    maxAge: 30 * 24 * 60 * 60 * 1000
+  });
 
-    res.status(statusCode).json({
-        status: 'success',
-        token,
-        data : {
-            user
-        }
-    });
+  res.status(statusCode).json({
+    status: 'success',
+    token,
+    data: {
+      user
+    }
+  });
 };
 
 
@@ -77,13 +86,12 @@ exports.signUp = catchAsync(async(req,res, next)=> {
 
         // Validate subcategory
         if (!category.subCategories.includes(req.body.subCategory)) {
-        return next(new AppError('Invalid subcategory for this category', 400));
+          return next(new AppError('Invalid subcategory for this category', 400));
         }
 
         newUser = await Seller.create({
             ...commonData,
             category : req.body.category,
-            subCategory : req.body.subCategory,
             businessName: req.body.businessName,
             businessRegistrationNo: req.body.businessRegistrationNo
         })
@@ -96,10 +104,10 @@ exports.signUp = catchAsync(async(req,res, next)=> {
 });
 
 exports.signIn = catchAsync(async(req, res, next)=>{
-    const {sludiNo, password, nic} = req.body;
+    const {sludiNo, password} = req.body;
 
     // 1) check the fields are exist
-    if (!sludiNo || !password || !nic) {
+    if (!sludiNo || !password) {
         return next(new AppError('Please provide NIC No and password', 400)); 
     }
 
@@ -107,7 +115,7 @@ exports.signIn = catchAsync(async(req, res, next)=>{
     const user = await User.findOne({sludiNo}).select('+password');
 
     if (!user || !(await user.comparePassword(password))) {
-        return next(new AppError('Incorrect NIC or password', 401));
+        return next(new AppError('Incorrect SLUDI or password', 401));
     }
 
     // 3) Update last login
@@ -159,37 +167,56 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 
 exports.protect = catchAsync(async (req, res, next) => {
   let token;
-  
-  // 1) Get token and check if it's there
+
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith('Bearer')
   ) {
     token = req.headers.authorization.split(' ')[1];
+  } else if (req.cookies.jwt) {
+    token = req.cookies.jwt;
   }
 
   if (!token) {
-    return next(new AppError('You are not logged in! Please log in to get access', 401));
+    return next(
+      new AppError('You are not logged in! Please log in to get access.', 401)
+    );
   }
 
-  // 2) Verify token
-  const decoded = await jwt.verify(token, process.env.JWT_SECRET);
+  try {
+    // 2) Verify token with manual promise wrapper (more reliable than promisify)
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log(decoded); 
 
-  // 3) Check if user still exists
-  const currentUser = await User.findById(decoded.id);
-  if (!currentUser) {
-    return next(new AppError('The user belonging to this token no longer exists', 401));
+    // 3) Check if user still exists
+    const currentUser = await User.findById(decoded.id);
+    if (!currentUser) {
+      return next(new AppError('The user belonging to this token no longer exists', 401));
+    }
+
+    // 4) Check if user changed password after the token was issued
+    if (currentUser.changepasswordAfter(decoded.iat)) {
+      return next(new AppError('User recently changed password! Please log in again', 401));
+    }
+
+    // 5) Grant access
+    req.user = currentUser;
+    next();
+
+  } catch (err) {
+    console.error('❌ JWT verification failed:', err);
+
+    if (err.name === 'JsonWebTokenError') {
+      return next(new AppError('Invalid token. Please log in again!', 401));
+    }
+    if (err.name === 'TokenExpiredError') {
+      return next(new AppError('Your token has expired! Please log in again', 401));
+    }
+
+    return next(new AppError(`Authentication failed: ${err.message}`, 401));
   }
-
-  // 4) Check if user changed password after the token was issued
-  if (currentUser.changedPasswordAfter(decoded.iat)) {
-    return next(new AppError('User recently changed password! Please log in again', 401));
-  }
-
-  // GRANT ACCESS TO PROTECTED ROUTE
-  req.user = currentUser;
-  next();
 });
+
 
 exports.restrictTo = (...roles) => {
   return (req, res, next) => {
