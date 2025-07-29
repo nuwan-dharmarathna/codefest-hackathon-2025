@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const {Schema} = mongoose;
 
+const locationSchema = require('./locationModel');
+
 const priceTierSchema = new Schema({
     minQuantity: { type: Number, required: true },
     maxQuantity: { type: Number, required: true },
@@ -67,7 +69,7 @@ const advertisementSchema = new Schema({
     min: [0, 'Delivery radius cannot be negative']
   },
   location: {
-    type: String,
+    type: locationSchema,
     required: [true, 'Location is required']
   },
   priceTiers: {

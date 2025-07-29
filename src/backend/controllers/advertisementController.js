@@ -22,7 +22,7 @@ exports.createAdvertisement = catchAsync(async(req, res, next)=>{
         quantity: req.body.quantity,
         unit: req.body.unit,
         deliveryAvailable: req.body.deliveryAvailable,
-        location: req.body.location,
+        location: req.user.location,
         priceTiers: req.body.priceTiers
     };
 

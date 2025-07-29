@@ -70,7 +70,7 @@ exports.signUp = catchAsync(async(req,res, next)=> {
         email: req.body.email,
         sludiNo: req.body.sludiNo,
         nic: req.body.nic,
-        address: req.body.address,
+        location: req.body.location,
         password: req.body.password,
         role: req.body.role
     };

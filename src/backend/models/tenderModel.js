@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const {Schema} = mongoose;
 
+const locationSchema = require('./locationModel');
+
 const tenderSchema = new Schema({
   createdBy: {
     type: Schema.Types.ObjectId,
@@ -44,7 +46,7 @@ const tenderSchema = new Schema({
     type: Boolean,
     default: false
   },
-  deliveryLocation: String,
+  deliveryLocation: locationSchema,
   deadline: {
     type: Date,
     required: [true, 'Tender must have a deadline']

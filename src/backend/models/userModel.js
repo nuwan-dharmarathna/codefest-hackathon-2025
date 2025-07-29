@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
+const locationSchema = require('./locationModel');
+
 const {Schema} = mongoose;
 
 const SALT_WORK_FACTOR = 10;
@@ -59,10 +61,9 @@ const BaseUserSchema = new Schema({
     required: [true, 'NIC is required'],
     unique: true
   },
-  address: {
-    type: String,
-    required: [true, 'Address is required'],
-    maxlength: [200, 'Address cannot exceed 200 characters']
+  location: {
+    type: locationSchema,
+    required: [true, 'Location is required']
   },
   password: {
     type: String,
