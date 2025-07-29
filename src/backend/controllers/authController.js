@@ -94,3 +94,4 @@ exports.signUp = catchAsync(async(req,res, next)=> {
     // 4) sent token response
     createSendToken(newUser, 201, res);
 });
+
