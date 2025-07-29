@@ -5,20 +5,18 @@ const express = require('express');
 
 const router = express.Router();
 
+router.route('/').get(advertisementController.getAllAdvertisements);
+router.route('/:id').get(advertisementController.getAdvertisement);
+router.get('/category/:categoryId', advertisementController.getAdvertisementsByCategory);
+router.get('/subcategory/:subCategoryId', advertisementController.getAdvertisementsBySubCategory);
+
 router.use(
     authController.protect,
     authController.restrictTo('seller')
 );
 
-router
-  .route('/')
-  .get(advertisementController.getAllAdvertisements)
-  .post(advertisementController.createAdvertisement);
+router.route('/').post(advertisementController.createAdvertisement);
 
-router
-  .route('/:id')
-  .get(advertisementController.getAdvertisement)
-  .patch(advertisementController.updateAdvertisement)
-  .delete(advertisementController.deleteAdvertisement);
+router.route('/:id').patch(advertisementController.updateAdvertisement).delete(advertisementController.deleteAdvertisement);
 
 module.exports = router;

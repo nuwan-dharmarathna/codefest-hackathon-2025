@@ -23,6 +23,17 @@ const advertisementSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'SubCategory',
     required: true,
+    validate: {
+      validator: async function(subCategoryId) {
+        // Validate that subcategory belongs to seller's category
+        const subCategory = await mongoose.model('SubCategory').findById(subCategoryId);
+        if (!subCategory) return false;
+        
+        const seller = await mongoose.model('Seller').findById(this.seller);
+        return seller.category.equals(subCategory.category);
+      },
+      message: 'Subcategory must belong to seller\'s registered category'
+    }
   },
   name: {
     type: String,

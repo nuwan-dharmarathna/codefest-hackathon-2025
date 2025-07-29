@@ -15,13 +15,25 @@ const subCategorySchema = mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref: 'SellerCategory',
         required: [true, 'Category is required']
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now
+    },
+    updatedAt: {
+      type: Date,
+      default: Date.now
     }
-});
+}, { timestamps: true });
 
 subCategorySchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
   next();
 });
+
+// Index for better query performance
+subCategorySchema.index({ category: 1 });
+subCategorySchema.index({ name: 'text' });
 
 const SubCategory = mongoose.model('SubCategory', sellerCategorySchema);
 

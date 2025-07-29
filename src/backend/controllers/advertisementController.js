@@ -75,4 +75,56 @@ exports.updateAdvertisement = catchAsync(async(req, res, next)=>{
     });
 });
 
+exports.getAdvertisementsByCategory = catchAsync(async(req,res,next)=>{
+    // 1) Check if category exists
+    const category = await mongoose.model('SellerCategory').findById(req.params.categoryId);
+    if (!category) {
+        return next(new AppError('No category found with that ID', 404));
+    }
+
+    // 2) Find all subcategories for this category
+    const subCategories = await mongoose.model('SubCategory').find({
+        category: req.params.categoryId
+    }).select('_id');
+
+    // 3) Get all active products in these subcategories
+    const advertisements = await Advertisement.find({
+        subCategory: { $in: subCategories.map(sc => sc._id) },
+        isActive: true
+    }).populate('seller', 'firstName lastName businessName').populate('category', 'name').populate('subCategory', 'name');
+
+    res.status(200).json({
+        status: 'success',
+        results: products.length,
+        data: {
+        products
+        }
+    });
+});
+
+exports.getAdvertisementsBySubCategory = catchAsync(async(req,res,next)=>{
+    // 1) Check if subcategory exists
+    const subCategory = await mongoose.model('SubCategory').findById(req.params.subCategoryId);
+    if (!subCategory) {
+        return next(new AppError('No subcategory found with that ID', 404));
+    }
+
+    // 2) Get all active products in this subcategory
+    const products = await Product.find({
+        subCategory: req.params.subCategoryId,
+        isActive: true
+    })
+        .populate('seller', 'firstName lastName businessName')
+        .populate('category', 'name')
+        .populate('subCategory', 'name');
+
+    res.status(200).json({
+        status: 'success',
+        results: products.length,
+        data: {
+        products
+        }
+    });
+});
+
 exports.deleteAdvertisement = factory.deleteOne(Advertisement);

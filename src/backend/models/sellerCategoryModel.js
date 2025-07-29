@@ -10,7 +10,10 @@ const sellerCategorySchema = new mongoose.Schema({
     type: String,
     unique: true,
   },
-  description: String,
+  description: {
+    type: String,
+    maxlength: [30, 'Description cannot exceed 30 characters']
+  },
   createdAt: {
     type: Date,
     default: Date.now
