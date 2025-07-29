@@ -56,7 +56,7 @@ class UserTypeCard extends StatelessWidget {
                   Spacer(),
                   Text(
                     description,
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 2,
                   ),
