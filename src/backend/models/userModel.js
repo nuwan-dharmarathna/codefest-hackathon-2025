@@ -49,7 +49,7 @@ const BaseUserSchema = new Schema({
       message: props => `${props.value} is not a valid email address!`
     }
   },
-  sLUDIno: {
+  sludiNo: {
     type: String,
     required: [true, 'SLUDI number is required'],
     unique: true
