@@ -10,10 +10,6 @@ const sellerCategorySchema = new mongoose.Schema({
     type: String,
     unique: true,
   },
-  subCategories: [{
-    type: String,
-    required: true
-  }],
   description: String,
   createdAt: {
     type: Date,

@@ -13,6 +13,8 @@ app.use(cookieParser());
 // Route files
 const userRoutes = require('./routes/userRoutes');
 const sellerCategoryRoutes = require('./routes/sellerCategoryRoutes');
+const subCategoryRoutes = require('./routes/subCategoryRoutes');
+const advertisementRoutes = require('./routes/advertisementRoutes');
 
 // Body parser, reading data from body into req.body
 app.use(express.json({ limit: '100kb' }));
@@ -38,6 +40,8 @@ app.get('/', (req, res) => {
 // API routes
 app.use('/api/v1/auth', userRoutes);
 app.use('/api/v1/sellerCategory', sellerCategoryRoutes);
+app.use('/api/v1/subCategory', subCategoryRoutes);
+app.use('/api/v1/advertisements', advertisementRoutes);
 
 
 app.all('*', (req, res, next) => {
