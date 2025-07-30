@@ -16,6 +16,7 @@ const sellerCategoryRoutes = require('./routes/sellerCategoryRoutes');
 const subCategoryRoutes = require('./routes/subCategoryRoutes');
 const advertisementRoutes = require('./routes/advertisementRoutes');
 const tenderRoutes = require('./routes/tenderRoutes');
+const purchaseRequestRoutes = require('./routes/purchaseRequestRoutes');
 
 // Body parser, reading data from body into req.body
 app.use(express.json({ limit: '100kb' }));
@@ -44,7 +45,7 @@ app.use('/api/v1/sellerCategory', sellerCategoryRoutes);
 app.use('/api/v1/subCategory', subCategoryRoutes);
 app.use('/api/v1/advertisements', advertisementRoutes);
 app.use('/api/v1/tenders', tenderRoutes);
-
+app.use('/api/v1/purchases', purchaseRequestRoutes);
 
 app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));

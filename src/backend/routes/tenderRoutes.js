@@ -14,3 +14,5 @@ router.route(':id/close').patch(tenderController.closeTender);
 router.use(authController.restrictTo('seller'));
 router.route(':id/bids').post(tenderController.submitBid);
 router.route('/:id').delete(tenderController.deleteBid);
+
+module.exports = router; 

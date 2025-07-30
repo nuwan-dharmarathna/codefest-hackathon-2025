@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
+const {Schema} = mongoose;
 
 
-const subCategorySchema = mongoose.Schema({
+const subCategorySchema = new Schema({
     name: {
       type: String,
       required: [true, 'Name is required'],
@@ -35,6 +36,6 @@ subCategorySchema.pre('save', function (next) {
 subCategorySchema.index({ category: 1 });
 subCategorySchema.index({ name: 'text' });
 
-const SubCategory = mongoose.model('SubCategory', sellerCategorySchema);
+const SubCategory = mongoose.model('SubCategory', subCategorySchema);
 
 module.exports = SubCategory;
