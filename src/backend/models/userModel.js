@@ -69,7 +69,7 @@ const BaseUserSchema = new Schema({
     type: String,
     required: [true, 'Password is required'],
     minlength: [8, 'Password must be at least 8 characters'],
-    select: false // Never return password in queries
+    select: false
   },
   registeredAt: {
     type: Date,

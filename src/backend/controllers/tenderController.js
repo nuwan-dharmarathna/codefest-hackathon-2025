@@ -2,10 +2,22 @@ const Bid = require('../models/bidModel');
 const Tender = require('../models/tenderModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
+const mongoose = require('mongoose');
 
 const factory = require('./factoryHandler');
 
 exports.createTender = catchAsync(async(req,res, next)=>{
+
+    //check the sub category in the sellercategory 
+    const subCategory = await mongoose.model('SubCategory').findById(req.body.subCategory);
+    if (!subCategory) {
+      return next(new AppError('Cannot find a Sub Category provided ID')); 
+    }
+
+    if (subCategory.category.toString() !== req.body.category) {
+      return next(new AppError('Sub Category and the Seller Category in defferent categories')); 
+    }
+
     // 1) Prepare tender data
     const tenderData = {
         createdBy: req.user.id,
@@ -16,12 +28,11 @@ exports.createTender = catchAsync(async(req,res, next)=>{
         subCategory: req.body.subCategory,
         quantity: req.body.quantity,
         unit: req.body.unit,
-        deadline: req.body.deadline
+        deliveryRequired : req.body.deliveryRequired
     };
 
     // Add delivery info if required
-    if (req.body.deliveryRequired) {
-        tenderData.deliveryRequired = true;
+    if (tenderData.deliveryRequired) {
         tenderData.deliveryLocation = req.body.deliveryLocation;
     }
 
@@ -29,7 +40,6 @@ exports.createTender = catchAsync(async(req,res, next)=>{
     const tender = await Tender.create(tenderData);
 
     // Todo:  Notify relevant sellers
-    // await notifyRelevantSellers(tender);
 
     res.status(201).json({
         status: 'success',
@@ -41,29 +51,40 @@ exports.createTender = catchAsync(async(req,res, next)=>{
 
 exports.getAllTenders = factory.getAll(Tender);
 
-exports.getTender = catchAsync(async (req, res, next) => {
-  const tender = await Tender.findById(req.params.id)
-    .populate('createdBy', 'firstName lastName businessName')
-    .populate('category', 'name')
-    .populate('subCategory', 'name')
-    .populate('acceptedBid')
-    .populate({
-      path: 'bids',
-      populate: {
-        path: 'user',
-        select: 'firstName lastName businessName'
-      }
-    });
+exports.getTender = factory.getOne(Tender);
 
+exports.getAllBidsBasedonTender = catchAsync(async(req, res, next)=>{
+  const tender = await Tender.findById(req.params.id);
   if (!tender) {
-    return next(new AppError('No tender found with that ID', 404));
+    return next(new AppError('Cannot to find a  Tender With That ID', 404));
   }
 
+  const bids = await Bid.find({ tender :  tender._id});
+
   res.status(200).json({
-    status: 'success',
-    data: {
-      tender
-    }
+        status: 'success',
+        results: bids.length,
+        data: {
+          bids
+        }
+    });
+});
+
+exports.getMyAllBids = catchAsync(async(req,res, next)=>{
+  const user = req.user;
+
+  if (user.role === "buyer") {
+    return next(new AppError('You Cannot Add Bids to Tenders', '403'));
+  }
+
+  const bids = await Bid.find({user : user._id});
+
+  res.status(200).json({
+      status: 'success',
+      results: bids.length,
+      data: {
+        bids
+      }
   });
 });
 
@@ -84,82 +105,71 @@ exports.submitBid = catchAsync(async (req, res, next) => {
         return next(new AppError('Only sellers can submit bids', 403));
     }
 
+    // check the seller already bidded
+    const existingBid = await Bid.findOne({ user : req.user._id });
+    if (existingBid) {
+      return next(new AppError('You Cannot Bid Again to this Tender', 403));
+    }
+
+    // check seller category and tender category are same
+    if (tender.category.toString() !== req.user.category.toString()) {
+      return next(new AppError('You cannot Bed this Tender Because You are not in the Tender category', 403));
+    }
+
     // 4) Prepare bid data
-    const bid = await Bid.create({
+    const bidData = {
         tender: req.params.id,
         user: req.user.id,
         price: req.body.price,
         quantity: tender.quantity, // Enforce exact quantity
         unit: tender.unit,         // Enforce exact unit
-        deliveryAvailable: req.body.deliveryAvailable,
-        deliveryRadius: req.body.deliveryRadius,
-        notes: req.body.notes
-    });
+        deliveryAvailable: tender.deliveryRequired,
+        notes: req.body.notes,
+        pickupLocation : req.user.location
+    };
 
-    // 5) Add bid to tender
-    tender.bids.push(bidData);
-    await tender.save();
+    if (bidData.deliveryAvailable) {
+      bidData.deliveryRadius = req.body.deliveryRadius
+    }
 
+    const bid = await Bid.create(bidData);
 
     res.status(201).json({
         status: 'success',
         data: {
-        bid: tender.bids[tender.bids.length - 1]
+          bid
         }
     });
 });
 
 exports.acceptBid = catchAsync(async (req, res, next) => {
-    // 1) Get tender
-    const tender = await Tender.findById(req.params.id);
-    if (!tender) {
-        return next(new AppError('No tender found with that ID', 404));
-    }
-
-    // 2) Check if user is the tender creator
-    if (!tender.createdBy.equals(req.user.id)) {
-        return next(new AppError('Only the tender creator can accept bids', 403));
-    }
-
-    // 3) Find the bid
-    const bid = tender.bids.id(req.params.bidId);
-    if (!bid) {
-        return next(new AppError('No bid found with that ID', 404));
-    }
-
-    // 4) Mark bid as accepted and close tender
-    bid.isAccepted = true;
-    tender.acceptedBid = bid._id;
-    tender.isClosed = true;
-    await tender.save();
-
-    res.status(200).json({
-        status: 'success',
-        data: {
-        tender
-        }
-    });
-});
-
-exports.closeTender = catchAsync(async (req, res, next) => {
-  const tender = await Tender.findOneAndUpdate(
-    {
-      _id: req.params.id,
-      createdBy: req.user.id
-    },
-    { isClosed: true },
-    { new: true }
-  );
-
+  // get the bid
+  const bid = await Bid.findById(req.params.id);
+  if (!bid) {
+    return next(new AppError('No bid found with that ID', 404));
+  }
+  // 1) Get tender
+  const tender = await Tender.findById(bid.tender);
   if (!tender) {
-    return next(new AppError('No tender found with that ID or you are not the creator', 404));
+      return next(new AppError('No tender found with that ID', 404));
   }
 
+  // 2) Check if user is the tender creator
+  if (!tender.createdBy.equals(req.user.id)) {
+      return next(new AppError('Only the tender creator can accept bids', 403));
+  }
+  
+  // 4) Mark bid as accepted and close tender
+  bid.isAccepted = true;
+  tender.acceptedBid = bid._id;
+  tender.isClosed = true;
+  await tender.save();
+
   res.status(200).json({
-    status: 'success',
-    data: {
+      status: 'success',
+      data: {
       tender
-    }
+      }
   });
 });
 

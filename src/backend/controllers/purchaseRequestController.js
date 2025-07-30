@@ -30,16 +30,9 @@ exports.createPurchaseRequest = catchAsync(async(req, res, next)=>{
     // check delivery is available
     const deliveryStatus = advertisement.deliveryAvailable;
 
-    if (deliveryStatus == false && wantToImport == true) {
+    if (deliveryStatus === false && wantToImport === true) {
         return next(new AppError('Seller does not provide any delivery option', 404));
     }
-
-    let deliveryLocation = null;
-
-    if (deliveryStatus == true && wantToImport == true) {
-        deliveryLocation = req.body.deliveryLocation || buyer.location
-    }
-
 
     // create the request
     const request = {
@@ -49,9 +42,12 @@ exports.createPurchaseRequest = catchAsync(async(req, res, next)=>{
         unit : advertisement.unit,
         pricePerUnit : matchedTier.price,
         totalPrice : matchedTier.price * quantity,
-        wantToImportThem : wantToImport,
-        deliveryLocation : deliveryLocation
+        wantToImportThem : wantToImport
     };
+
+    if(request.wantToImportThem){
+        request.deliveryLocation = req.body.deliveryLocation || buyer.location
+    }
 
     const purchaseRequest = await PurchaseRequest.create(request);
 
@@ -65,22 +61,18 @@ exports.createPurchaseRequest = catchAsync(async(req, res, next)=>{
 });
 
 exports.getRequestsForAdvertisement = catchAsync(async(req, res, next)=>{
-    const {advertisementId} = req.params;
-    const seller = req.seller;
-
     // Find the advertisement
-    const advertisement = await Advertisement.findById(advertisementId);
+    const advertisement = await Advertisement.findById(req.params.id);
     if (!advertisement) {
         return next(new AppError('Advertisement not found', 404));
     }
 
-    if (advertisement.seller.toString() !== seller._id.toString()) {
+    if (advertisement.seller.toString() !== req.user._id.toString()) {
         return next(new AppError('Not authorized to view this ad\'s requests', 403));
     }
 
     // Fetch purchase requests for this ad
-    const requests = await PurchaseRequest.find({ advertisement: advertisementId })
-      .populate('buyer')
+    const requests = await PurchaseRequest.find({ advertisement: advertisement._id })
       .sort({ createdAt: -1 });
 
     res.status(201).json({
@@ -124,11 +116,11 @@ exports.replyToPurchaseRequest = catchAsync(async(req,res,next)=>{
 
     // handle accept criteria
 
-    if(purchaseRequestStatus === 'accepted' && paymentMethod === null){
+    if(purchaseRequestStatus === 'accepted' && !paymentMethod){
         return next(new AppError('Must have a payment method for the accept purchaces', '403'));
     }
 
-    if (purchaseRequestStatus === 'rejected' && description === null) {
+    if (purchaseRequestStatus === 'rejected' && !description) {
         return next(new AppError('The reason for rejection must be clearly stated.', '403'));
     }
 

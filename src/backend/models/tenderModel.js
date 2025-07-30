@@ -47,10 +47,6 @@ const tenderSchema = new Schema({
     default: false
   },
   deliveryLocation: locationSchema,
-  deadline: {
-    type: Date,
-    required: [true, 'Tender must have a deadline']
-  },
   isClosed: {
     type: Boolean,
     default: false
@@ -65,7 +61,7 @@ const tenderSchema = new Schema({
   }
 }, { timestamps: true });
 
-// Virtual for bids (not stored in DB, just for querying)
+// Virtual for bid (not stored in DB, just for querying)
 tenderSchema.virtual('bids', {
   ref: 'Bid',
   localField: '_id',

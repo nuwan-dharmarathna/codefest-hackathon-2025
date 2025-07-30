@@ -1,7 +1,6 @@
 const jwt = require('jsonwebtoken');
 const {User, Buyer, Seller} = require('../models/userModel');
-const {SellerCategory} = require('../models/sellerCategoryModel');
-const { promisify } = require('util');
+const SellerCategory = require('../models/sellerCategoryModel');
 
 
 const AppError = require('../utils/appError');
@@ -84,16 +83,11 @@ exports.signUp = catchAsync(async(req,res, next)=> {
             return next(new AppError('Invalid seller category', 400));
         }
 
-        // Validate subcategory
-        if (!category.subCategories.includes(req.body.subCategory)) {
-          return next(new AppError('Invalid subcategory for this category', 400));
-        }
-
         newUser = await Seller.create({
             ...commonData,
             category : req.body.category,
             businessName: req.body.businessName,
-            businessRegistrationNo: req.body.businessRegistrationNo
+            businessRegistrationNo: req.body.businessRegistrationNo || ""
         })
     } else {
         return next(new AppError('Invalid user role', 400));

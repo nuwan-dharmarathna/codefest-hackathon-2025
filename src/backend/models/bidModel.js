@@ -11,15 +11,8 @@ const bidSchema = new Schema({
   },
   user: {
     type: Schema.Types.ObjectId,
-    ref: 'User',
+    ref: 'Seller',
     required: [true, 'Bid must have a user'],
-    validate: {
-      validator: async function(userId) {
-        const user = await mongoose.model('User').findById(userId);
-        return user?.role === 'seller';
-      },
-      message: 'Only sellers can submit bids'
-    }
   },
   price: {
     type: Number,

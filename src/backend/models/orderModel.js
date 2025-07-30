@@ -48,7 +48,6 @@ const orderSchema = new Schema({
   paymentMethod: {
     type: String,
     enum: ['cash', 'card', 'bank-transfer', 'mobile-payment'],
-    required: [true, 'Payment method is required']
   },
   paymentStatus: {
     type: String,

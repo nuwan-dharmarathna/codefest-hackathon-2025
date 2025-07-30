@@ -25,17 +25,6 @@ const advertisementSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'SubCategory',
     required: true,
-    validate: {
-      validator: async function(subCategoryId) {
-        // Validate that subcategory belongs to seller's category
-        const subCategory = await mongoose.model('SubCategory').findById(subCategoryId);
-        if (!subCategory) return false;
-        
-        const seller = await mongoose.model('Seller').findById(this.seller);
-        return seller.category.equals(subCategory.category);
-      },
-      message: 'Subcategory must belong to seller\'s registered category'
-    }
   },
   name: {
     type: String,
@@ -113,22 +102,6 @@ const advertisementSchema = new Schema({
     default: true
   }
 }, { timestamps: true });
-
-// Middleware to validate seller's category matches the product category
-advertisementSchema.pre('save', async function(next) {
-  const Seller = mongoose.model('Seller');
-  const seller = await Seller.findById(this.seller).populate('category');
-  
-  if (!seller) {
-    throw new Error('Invalid seller reference');
-  }
-  
-  if (!seller.category._id.equals(this.category)) {
-    throw new Error('Product category must match seller\'s registered category');
-  }
-  
-  next();
-});
 
 // Indexes for better query performance
 advertisementSchema.index({ seller: 1 });

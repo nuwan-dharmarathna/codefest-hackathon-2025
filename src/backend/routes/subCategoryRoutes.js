@@ -15,4 +15,6 @@ router
     .patch(subCategoryController.updateSubCategory)
     .delete(subCategoryController.deleteSubCategory);
 
+router.route('/category/:id').get(subCategoryController.getAllSubCategoriesAccordingToSellerCategory);
+
 module.exports = router;
