@@ -42,7 +42,7 @@ exports.createTender = catchAsync(async(req,res, next)=>{
     const tender = await Tender.create(tenderData);
 
     // Notify relevant sellers
-    const sellers = await mongoose.model('Seller').find({role : 'seller', category : tenderData.category});
+    const sellers = await mongoose.model('User').find({role : 'seller', category : tenderData.category});
 
     if (!sellers) {
       return next(new AppError('Cannot to find any seller with that category'))
