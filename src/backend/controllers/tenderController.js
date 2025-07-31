@@ -4,6 +4,8 @@ const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const mongoose = require('mongoose');
 
+const notificationService = require('../services/notificationService');
+
 const factory = require('./factoryHandler');
 
 exports.createTender = catchAsync(async(req,res, next)=>{
@@ -39,7 +41,24 @@ exports.createTender = catchAsync(async(req,res, next)=>{
     // 2) Create tender
     const tender = await Tender.create(tenderData);
 
-    // Todo:  Notify relevant sellers
+    // Notify relevant sellers
+    const sellers = await mongoose.model('Seller').find({role : 'seller', category : tenderData.category});
+
+    if (!sellers) {
+      return next(new AppError('Cannot to find any seller with that category'))
+    }
+
+    // Create notifications
+    await Promise.all(sellers.map(seller => 
+      notificationService.createNotification({
+        recipient : seller._id,
+        sender : tenderData.createdBy,
+        type : 'tender_created',
+        relatedEntity : tender._id,
+        relatedEntityModel : 'Tender',
+        message : `New tender created in your category: ${tender.title}`
+      })
+    ));
 
     res.status(201).json({
         status: 'success',
@@ -164,6 +183,16 @@ exports.acceptBid = catchAsync(async (req, res, next) => {
   tender.acceptedBid = bid._id;
   tender.isClosed = true;
   await tender.save();
+
+  // notify to seller
+  await notificationService.createNotification({
+      recipient: bid.user,
+      sender: req.user._id,
+      type: 'bid_accepted',
+      relatedEntity: bid._id,
+      relatedEntityModel: 'Bid',
+      message: `Your bid for ${tender.title} has been accepted`
+  });
 
   res.status(200).json({
       status: 'success',

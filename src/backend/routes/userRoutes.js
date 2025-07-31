@@ -9,6 +9,8 @@ router.route('/signIn').post(authController.signIn);
 
 router.use(authController.protect);
 router.route('/me').get(authController.getMe);
+router.route('/logout').get(authController.logout);
+router.route('/updateMe').patch(authController.updateMyDetails);
 router.route('/updatePassword').patch(authController.updatePassword);
 
 module.exports = router;

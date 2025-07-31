@@ -17,6 +17,7 @@ const subCategoryRoutes = require('./routes/subCategoryRoutes');
 const advertisementRoutes = require('./routes/advertisementRoutes');
 const tenderRoutes = require('./routes/tenderRoutes');
 const purchaseRequestRoutes = require('./routes/purchaseRequestRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
 
 // Body parser, reading data from body into req.body
 app.use(express.json({ limit: '100kb' }));
@@ -46,6 +47,7 @@ app.use('/api/v1/subCategory', subCategoryRoutes);
 app.use('/api/v1/advertisements', advertisementRoutes);
 app.use('/api/v1/tenders', tenderRoutes);
 app.use('/api/v1/purchases', purchaseRequestRoutes);
+app.use('/api/v1/notifications', notificationRoutes);
 
 app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));

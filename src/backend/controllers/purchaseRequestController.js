@@ -7,6 +7,8 @@ const AppError = require('../utils/appError');
 
 const factory = require('./factoryHandler');
 
+const notificationService = require('../services/notificationService');
+
 exports.createPurchaseRequest = catchAsync(async(req, res, next)=>{
     const { advertisementId, quantity, wantToImport} = req.body;
 
@@ -50,6 +52,16 @@ exports.createPurchaseRequest = catchAsync(async(req, res, next)=>{
     }
 
     const purchaseRequest = await PurchaseRequest.create(request);
+
+    // notify to seller
+    await notificationService.createNotification({
+        recipient : advertisement.seller,
+        sender : req.user._id,
+        type: 'purchase_request',
+        relatedEntity: purchase._id,
+        relatedEntityModel: 'PurchaseRequest',
+        message: `New purchase request for your product: ${advertisement.name}`
+    });
 
     res.status(201).json({
         status: 'success',
@@ -150,6 +162,16 @@ exports.replyToPurchaseRequest = catchAsync(async(req,res,next)=>{
 
         await advertisement.save();
 
+        // notify buyer
+        await notificationService.createNotification({
+            recipient: purchaseRequest.buyer,
+            sender: req.user._id,
+            type: 'purchase_accepted',
+            relatedEntity: purchaseRequest._id,
+            relatedEntityModel: 'PurchaseRequest',
+            message: `Your purchase request for ${advertisement.name} has been ${purchaseRequest.status}`
+        });
+
         res.status(201).json({
             status: 'success',
             data: {
@@ -166,7 +188,7 @@ exports.replyToPurchaseRequest = catchAsync(async(req,res,next)=>{
             message: 'Purchase request rejected successfully'
         });
     }
-})
+});
 
 exports.getPurchaseRequest = factory.getOne(PurchaseRequest);
 

@@ -2,7 +2,6 @@ const jwt = require('jsonwebtoken');
 const {User, Buyer, Seller} = require('../models/userModel');
 const SellerCategory = require('../models/sellerCategoryModel');
 
-
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 
@@ -36,7 +35,6 @@ const createSendToken = (user, statusCode, res) => {
     }
   });
 };
-
 
 // Register 
 exports.signUp = catchAsync(async(req,res, next)=> {
@@ -159,6 +157,62 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   createSendToken(user, 200, res);
 });
 
+exports.updateMyDetails = catchAsync(async (req, res, next) => {
+  // 1) Create error if user POSTs password data
+  if (req.body.password || req.body.passwordConfirm) {
+    return next(
+      new AppError(
+        'This route is not for password updates. Please use /updatePassword',
+        400
+      )
+    );
+  }
+
+  // 2) Filter out unwanted fields that shouldn't be updated
+  const filteredBody = {
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
+    phone: req.body.phone,
+    email: req.body.email,
+    location: req.body.location
+  };
+
+  // For sellers, add business-specific fields
+  if (req.user.role === 'seller') {
+    if (req.body.businessName) filteredBody.businessName = req.body.businessName;
+    if (req.body.businessRegistrationNo) filteredBody.businessRegistrationNo = req.body.businessRegistrationNo;
+    if (req.body.category) {
+      // Validate seller category exists
+      const category = await SellerCategory.findById(req.body.category);
+      if (!category) {
+        return next(new AppError('Invalid seller category', 400));
+      }
+      filteredBody.category = req.body.category;
+    }
+  }
+
+  // 3) Update user doc
+  let updatedUser;
+  if (req.user.role === 'buyer') {
+    updatedUser = await Buyer.findByIdAndUpdate(req.user.id, filteredBody, {
+      new: true,
+      runValidators: true
+    });
+  } else if (req.user.role === 'seller') {
+    updatedUser = await Seller.findByIdAndUpdate(req.user.id, filteredBody, {
+      new: true,
+      runValidators: true
+    }).populate('category');
+  }
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      user: updatedUser
+    }
+  });
+});
+
 exports.protect = catchAsync(async (req, res, next) => {
   let token;
 
@@ -220,4 +274,17 @@ exports.restrictTo = (...roles) => {
     }
     next();
   };
+};
+
+exports.logout = (req, res) => {
+  // Clear the JWT cookie
+  res.cookie('jwt', 'loggedout', {
+    expires: new Date(Date.now() + 1000), // 1 second expiration
+    httpOnly: true
+  });
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Successfully logged out'
+  });
 };
