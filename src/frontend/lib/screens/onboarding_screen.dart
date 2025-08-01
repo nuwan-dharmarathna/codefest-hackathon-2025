@@ -59,31 +59,29 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   left: 0,
                   right: 0,
                   child: !showDetailsPage
-                      ? GestureDetector(
-                          onTap: () {
+                      ? CustomButton(
+                          title: showDetailsPage ? "Get Started" : "Next",
+                          onPressed: () {
                             _controller.animateToPage(
                               _controller.page!.toInt() + 1,
                               duration: Duration(milliseconds: 400),
                               curve: Curves.easeInOut,
                             );
                           },
-                          child: CustomButton(
-                            title: showDetailsPage ? "Get Started" : "Next",
-                            backgroungColor: Theme.of(
-                              context,
-                            ).colorScheme.primary,
-                          ),
+                          backgroundColor: Theme.of(
+                            context,
+                          ).colorScheme.primary,
+                          borderRadius: 15,
                         )
-                      : GestureDetector(
-                          onTap: () {
+                      : CustomButton(
+                          title: showDetailsPage ? "Get Started" : "Next",
+                          onPressed: () {
                             GoRouter.of(context).pushNamed(RouterNames.welcome);
                           },
-                          child: CustomButton(
-                            title: showDetailsPage ? "Get Started" : "Next",
-                            backgroungColor: Theme.of(
-                              context,
-                            ).colorScheme.primary,
-                          ),
+                          backgroundColor: Theme.of(
+                            context,
+                          ).colorScheme.primary,
+                          borderRadius: 15,
                         ),
                 ),
               ],

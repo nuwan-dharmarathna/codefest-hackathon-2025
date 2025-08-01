@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/widgets/custom_alert_box.dart';
+import 'package:frontend/widgets/custom_button.dart';
+import 'package:frontend/widgets/custom_text_input.dart';
 
 class SelectLocationPage extends StatefulWidget {
   const SelectLocationPage({super.key});
@@ -41,7 +44,66 @@ class _SelectLocationPageState extends State<SelectLocationPage> {
                 color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
               ),
             ),
-            SizedBox(height: 30),
+            SizedBox(height: 40),
+            CustomTextInputField(
+              lableText: "Enter your Address",
+              hintText: "No. 67, Main Street, Kolonnawa.",
+              keyBoardType: TextInputType.text,
+            ),
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.4,
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withOpacity(0.6),
+                      width: 0.5,
+                    ),
+                  ),
+                ),
+                SizedBox(width: 10),
+                Text("Or"),
+                SizedBox(width: 10),
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.4,
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withOpacity(0.6),
+                      width: 0.5,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 20),
+            CustomButton(
+              title: "Pick Your Location From Map",
+              backgroundColor: Colors.transparent,
+              textColor: Theme.of(context).colorScheme.onSurface,
+              borderColor: Colors.blueAccent,
+              borderWidth: 2,
+              borderRadius: 50,
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return CustomAlertBox(
+                      title: "Warning",
+                      message:
+                          "Coming soon!\nThis feature is still in development.",
+                      icon: Icons.warning_amber_rounded,
+                    );
+                  },
+                );
+              },
+            ),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.1),
             Container(
               margin: EdgeInsets.only(bottom: 15, top: 15),
               width: double.infinity,
