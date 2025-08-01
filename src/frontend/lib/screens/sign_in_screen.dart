@@ -71,12 +71,12 @@ class _SigninScreenState extends State<SigninScreen> {
               child: Column(
                 children: [
                   CustomTextInputField(
-                    lableText: "SLUID Number",
+                    lableText: "SLUDI Number",
                     hintText: "Enter your SLUID number",
                     keyBoardType: TextInputType.text,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return "Please enter your SLUID number";
+                        return "Please enter your SLUDI number";
                       }
                       return null;
                     },
@@ -85,22 +85,6 @@ class _SigninScreenState extends State<SigninScreen> {
                     obscureText: false,
                   ),
 
-                  const SizedBox(height: 20),
-
-                  CustomTextInputField(
-                    lableText: "NIC Number",
-                    hintText: "Enter your NIC number",
-                    keyBoardType: TextInputType.text,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "Please enter your NIC number";
-                      }
-                      return null;
-                    },
-                    onSaved: (newValue) =>
-                        _nicNoController.text = newValue ?? '',
-                    obscureText: false,
-                  ),
                   const SizedBox(height: 20),
 
                   CustomTextInputField(

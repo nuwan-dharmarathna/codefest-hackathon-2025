@@ -14,7 +14,7 @@ import 'package:go_router/go_router.dart';
 
 class RouterClass {
   final router = GoRouter(
-    initialLocation: "/buyer",
+    initialLocation: "/selectLocation",
     routes: [
       GoRoute(
         path: "/",
