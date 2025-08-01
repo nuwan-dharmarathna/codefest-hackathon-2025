@@ -1,8 +1,6 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
-const locationSchema = require('./locationModel');
-
 const bidSchema = new Schema({
   tender: {
     type: Schema.Types.ObjectId,
@@ -28,7 +26,7 @@ const bidSchema = new Schema({
     enum: ['kg', 'g', 'L', 'ml', 'unit', 'dozen']
   },
   pickupLocation: { // Where the goods can be picked up
-    type: locationSchema,
+    type: String,
     required: [true, 'Pickup location is required']
   },
   deliveryAvailable: {

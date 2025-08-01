@@ -1,8 +1,6 @@
 const mongoose = require('mongoose');
 const {Schema} = mongoose;
 
-const locationSchema = require('./locationModel');
-
 const tenderSchema = new Schema({
   createdBy: {
     type: Schema.Types.ObjectId,
@@ -46,7 +44,7 @@ const tenderSchema = new Schema({
     type: Boolean,
     default: false
   },
-  deliveryLocation: locationSchema,
+  deliveryLocation: String,
   isClosed: {
     type: Boolean,
     default: false

@@ -1,8 +1,6 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
-const locationSchema = require('./locationModel');
-
 const purchaseRequestSchema = new Schema({
     advertisement: {
         type: Schema.Types.ObjectId,
@@ -44,7 +42,7 @@ const purchaseRequestSchema = new Schema({
         required: true,
         default: false
     },
-    deliveryLocation: locationSchema,
+    deliveryLocation: String,
     createdAt: {
         type: Date,
         default: Date.now

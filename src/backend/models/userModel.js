@@ -1,8 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
-const locationSchema = require('./locationModel');
-
 const {Schema} = mongoose;
 
 const SALT_WORK_FACTOR = 10;
@@ -62,7 +60,7 @@ const BaseUserSchema = new Schema({
     unique: true
   },
   location: {
-    type: locationSchema,
+    type: String,
     required: [true, 'Location is required']
   },
   password: {
