@@ -6,8 +6,7 @@ class RouterNames {
   static const String signUp = "/signUp";
   static const String userTypePage = "/userTypePage";
   static const String sellerCategory = "/sellerCategory";
-  static const String buyerInfo = "/buyerInfo";
-  static const String sellerInfo = "/sellerInfo";
+  static const String userInfo = "/userInfo";
   static const String otp = "/otp";
   static const String selectLocation = "/selectLocation";
   static const String buyer = "/buyer";

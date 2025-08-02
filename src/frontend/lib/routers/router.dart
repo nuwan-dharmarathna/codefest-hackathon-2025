@@ -1,10 +1,9 @@
 import 'package:frontend/routers/router_names.dart';
 import 'package:frontend/screens/buyer/buyer_main_screen.dart';
 import 'package:frontend/screens/onboarding_screen.dart';
-import 'package:frontend/screens/registration/buyer_info_page.dart';
 import 'package:frontend/screens/registration/select_location_page.dart';
 import 'package:frontend/screens/registration/seller_category_page.dart';
-import 'package:frontend/screens/registration/seller_info_page.dart';
+import 'package:frontend/screens/registration/user_info_page.dart';
 import 'package:frontend/screens/sign_in_screen.dart';
 import 'package:frontend/screens/sign_up_screen.dart';
 import 'package:frontend/screens/splash_screen.dart';
@@ -13,8 +12,8 @@ import 'package:frontend/widgets/otp_form.dart';
 import 'package:go_router/go_router.dart';
 
 class RouterClass {
-  final router = GoRouter(
-    initialLocation: "/selectLocation",
+  static final router = GoRouter(
+    initialLocation: "/signUp",
     routes: [
       GoRoute(
         path: "/",
@@ -42,21 +41,19 @@ class RouterClass {
         builder: (context, state) => SignupScreen(),
         routes: [
           GoRoute(
+            path: "/selectLocation",
+            name: RouterNames.selectLocation,
+            builder: (context, state) => SelectLocationPage(),
+          ),
+          GoRoute(
             path: "/sellerCategory",
             name: RouterNames.sellerCategory,
             builder: (context, state) => SellerCategoryPage(),
-            routes: [
-              GoRoute(
-                path: "/sellerInfo",
-                name: RouterNames.sellerInfo,
-                builder: (context, state) => SellerInfoPage(),
-              ),
-            ],
           ),
           GoRoute(
-            path: "/buyerInfo",
-            name: RouterNames.buyerInfo,
-            builder: (context, state) => BuyerInfoPage(),
+            path: "/userInfo",
+            name: RouterNames.userInfo,
+            builder: (context, state) => UserInfoPage(),
           ),
         ],
       ),
@@ -64,11 +61,6 @@ class RouterClass {
         path: "/otp",
         name: RouterNames.otp,
         builder: (context, state) => OtpForm(),
-      ),
-      GoRoute(
-        path: "/selectLocation",
-        name: RouterNames.selectLocation,
-        builder: (context, state) => SelectLocationPage(),
       ),
       GoRoute(
         path: "/buyer",
