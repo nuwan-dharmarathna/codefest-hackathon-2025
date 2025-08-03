@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 
 class CustomCategoryCard extends StatelessWidget {
+  final String title;
   final bool isSelected;
-  const CustomCategoryCard({super.key, required this.isSelected});
+  const CustomCategoryCard({
+    super.key,
+    required this.isSelected,
+    required this.title,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +41,7 @@ class CustomCategoryCard extends StatelessWidget {
         ),
         SizedBox(height: 10),
         Text(
-          "Agriculture",
+          title,
           style: isSelected == true
               ? TextStyle(
                   color: Theme.of(context).colorScheme.primary,

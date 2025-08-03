@@ -55,6 +55,7 @@ class _SellerCategoryPageState extends State<SellerCategoryPage> {
                 const SizedBox(height: 24),
                 Expanded(
                   child: ListView.builder(
+                    shrinkWrap: true,
                     padding: EdgeInsets.only(bottom: 20), // Add bottom padding
                     itemCount: sellerCategoryProvider.sellerCategories.length,
                     itemBuilder: (context, index) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/providers/seller_category_provider.dart';
 import 'package:frontend/providers/user_provider.dart';
 import 'package:frontend/widgets/custom_category_card.dart';
 import 'package:provider/provider.dart';
@@ -11,8 +12,8 @@ class BuyerHomeScreen extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Consumer<UserProvider>(
-            builder: (context, userProvider, child) {
+          child: Consumer2<UserProvider, SellerCategoryProvider>(
+            builder: (context, userProvider, sellerCategoryProvider, child) {
               return Column(
                 children: [
                   SizedBox(
@@ -84,7 +85,24 @@ class BuyerHomeScreen extends StatelessWidget {
                             style: Theme.of(context).textTheme.titleLarge,
                           ),
                           SizedBox(height: 20),
-                          CustomCategoryCard(isSelected: true),
+                          Container(
+                            height: 100, // or whatever height you need
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              scrollDirection: Axis.horizontal,
+                              itemCount: sellerCategoryProvider
+                                  .sellerCategories
+                                  .length,
+                              itemBuilder: (context, index) {
+                                final category = sellerCategoryProvider
+                                    .sellerCategories[index];
+                                return CustomCategoryCard(
+                                  isSelected: false,
+                                  title: category.name,
+                                );
+                              },
+                            ),
+                          ),
                         ],
                       ),
                     ),
