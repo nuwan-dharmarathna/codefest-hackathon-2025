@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:frontend/models/user_model.dart';
 import 'package:frontend/providers/signup_provider.dart';
@@ -48,47 +46,45 @@ class _UserInfoPageState extends State<UserInfoPage> {
   }
 
   void _registerUser(UserModel user, SignupProvider provider) async {
-    setState(() {
-      isLoading = true;
-    });
+    setState(() => isLoading = true);
     try {
-      final res = await provider.signUpUser(user);
-
+      final response = await provider.signUpUser(user);
       if (!mounted) return;
 
-      if (res == 200) {
+      if (response['status'] == 'success') {
         provider.clear();
         showDialog(
-          context: context, // Make sure you have access to the BuildContext
-          builder: (BuildContext context) {
-            return CustomAlertBox(
-              icon: Icons.done,
-              title: "Success",
-              message: "User Registration Success!",
-            );
-          },
-        );
-        context.goNamed(RouterNames.signIn);
+          context: context,
+          builder: (ctx) => CustomAlertBox(
+            icon: Icons.done,
+            title: "Success",
+            message: "Registration successful!",
+          ),
+        ).then((_) {
+          context.goNamed(RouterNames.signIn);
+        });
       } else {
-        provider.clear();
-        context.goNamed(RouterNames.signUp);
+        showDialog(
+          context: context,
+          builder: (ctx) => CustomAlertBox(
+            icon: Icons.error,
+            title: "Error",
+            message: response['message'] ?? 'Registration failed',
+          ),
+        );
       }
     } catch (e) {
-      log("Registration Failed In User Info Page :  $e");
+      if (!mounted) return;
       showDialog(
-        context: context, // Make sure you have access to the BuildContext
-        builder: (BuildContext context) {
-          return CustomAlertBox(
-            icon: Icons.close,
-            title: "Somethig went wrong",
-            message: e.toString(),
-          );
-        },
+        context: context,
+        builder: (ctx) => CustomAlertBox(
+          icon: Icons.error,
+          title: "Error",
+          message: "Unexpected error occurred",
+        ),
       );
     } finally {
-      setState(() {
-        isLoading = false;
-      });
+      if (mounted) setState(() => isLoading = false);
     }
   }
 

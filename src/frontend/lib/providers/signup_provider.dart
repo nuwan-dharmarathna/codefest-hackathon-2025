@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -76,13 +77,43 @@ class SignupProvider extends ChangeNotifier {
   }
 
   // signUp User
-  Future<int> signUpUser(UserModel user) async {
+  Future<Map<String, dynamic>> signUpUser(UserModel user) async {
     try {
-      _authApiService.registerUser(user);
-      return 200;
+      final response = await _authApiService.registerUser(user);
+
+      // Directly return successful responses
+      if (response['status'] == 'success') {
+        return response;
+      }
+
+      // Format error responses consistently
+      return {
+        'status': 'failed',
+        'error':
+            response['error'] ??
+            {
+              'statusCode': 400,
+              'message': response['message'] ?? 'Registration failed',
+            },
+        'message': response['message'] ?? 'Registration failed',
+      };
     } catch (e) {
-      log("Failed to add user : $e");
-      return 404;
+      log("Registration error: $e");
+
+      // Handle cases where the error is actually a success response
+      if (e.toString().contains('{"status":"success"')) {
+        try {
+          return json.decode(e.toString().split('Exception: ').last);
+        } catch (_) {
+          // Fall through to normal error handling
+        }
+      }
+
+      return {
+        'status': 'failed',
+        'error': {'statusCode': 500, 'message': 'Network error'},
+        'message': 'Failed to connect to server',
+      };
     }
   }
 }

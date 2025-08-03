@@ -35,16 +35,37 @@ class _SigninScreenState extends State<SigninScreen> {
         isLoading = true;
       });
       try {
-        await _apiService.signInUser(
+        final res = await _apiService.signInUser(
           sludiNo: _sluidNoController.text,
           password: _passwordController.text,
         );
 
-        if (!mounted) return;
+        _sluidNoController.text = "";
+        _passwordController.text = "";
 
-        context.goNamed(RouterNames.splash);
+        if (res['status'] == 'success') {
+          showDialog(
+            context: context,
+            builder: (ctx) => CustomAlertBox(
+              icon: Icons.done,
+              title: "Success",
+              message: "Login successful!",
+            ),
+          ).then((_) {
+            context.goNamed(RouterNames.splash);
+          });
+        } else {
+          showDialog(
+            context: context,
+            builder: (ctx) => CustomAlertBox(
+              icon: Icons.error,
+              title: "Error",
+              message: res['message'] ?? 'Registration failed',
+            ),
+          );
+        }
       } catch (e) {
-        log("Registration Failed In User Info Page :  $e");
+        log("Registration Failed In signIn Page :  $e");
         showDialog(
           context: context, // Make sure you have access to the BuildContext
           builder: (BuildContext context) {

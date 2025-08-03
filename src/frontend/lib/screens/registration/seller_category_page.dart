@@ -7,9 +7,14 @@ import 'package:frontend/widgets/form_progress_indicator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-class SellerCategoryPage extends StatelessWidget {
+class SellerCategoryPage extends StatefulWidget {
   const SellerCategoryPage({super.key});
 
+  @override
+  State<SellerCategoryPage> createState() => _SellerCategoryPageState();
+}
+
+class _SellerCategoryPageState extends State<SellerCategoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

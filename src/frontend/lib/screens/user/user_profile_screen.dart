@@ -191,18 +191,28 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                       },
                     ),
                     SizedBox(height: 10),
-                    CustomUserMenuListTile(
-                      title: "My Purchases",
-                      leadingIcon: Icons.wallet_rounded,
-                      onPressed: () {
-                        GoRouter.of(
-                          context,
-                        ).pushNamed(RouterNames.buyerPurchases);
-                      },
-                    ),
+                    userProvider.user?.role == UserRole.buyer
+                        ? CustomUserMenuListTile(
+                            title: "My Purchases",
+                            leadingIcon: Icons.wallet_rounded,
+                            onPressed: () {
+                              GoRouter.of(
+                                context,
+                              ).pushNamed(RouterNames.buyerPurchases);
+                            },
+                          )
+                        : CustomUserMenuListTile(
+                            title: "My Bids",
+                            leadingIcon: Icons.wallet_rounded,
+                            onPressed: () {
+                              GoRouter.of(
+                                context,
+                              ).pushNamed(RouterNames.buyerPurchases);
+                            },
+                          ),
                     SizedBox(height: 10),
                     CustomUserMenuListTile(
-                      title: "Update Passwords",
+                      title: "Update Password",
                       leadingIcon: Icons.password_rounded,
                       onPressed: () {
                         GoRouter.of(

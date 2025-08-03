@@ -17,8 +17,10 @@ class AuthApiService {
         body: json.encode(user.toJson()),
       );
 
-      if (response.statusCode == 200) {
-        return json.decode(response.body);
+      final responseBody = json.decode(response.body);
+
+      if (response.statusCode == 201) {
+        return responseBody;
       } else {
         throw Exception('Failed to register user: ${response.body}');
       }
@@ -40,7 +42,7 @@ class AuthApiService {
       );
 
       // First decode the response body
-      final Map<String, dynamic> result = jsonDecode(response.body);
+      final result = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
         // Validate the response structure
