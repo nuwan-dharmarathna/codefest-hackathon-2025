@@ -34,8 +34,6 @@ class _SplashScreenState extends State<SplashScreen> {
         ? await AuthApiService().isTokenValid()
         : false;
 
-    log("Token validation :$isTokenValid");
-
     await Future.delayed(const Duration(seconds: 2)); // Splash delay
 
     if (!mounted) return;

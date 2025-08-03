@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
 
-class BuyerPurchasesScreen extends StatelessWidget {
-  const BuyerPurchasesScreen({super.key});
+class EditUserDetailsScreen extends StatefulWidget {
+  const EditUserDetailsScreen({super.key});
 
+  @override
+  State<EditUserDetailsScreen> createState() => _EditUserDetailsScreenState();
+}
+
+class _EditUserDetailsScreenState extends State<EditUserDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         title: Text(
-          "My Purchases",
+          "Update Your Details",
           style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
         ),
       ),

@@ -16,5 +16,6 @@ class RouterNames {
   static const String buyerProfile = "/buyerProfile";
   static const String buyerPurchases = "/buyerPurchases";
   static const String updatePassword = "/updatePassword";
+  static const String editUserDetails = "/editUserDetails";
   static const String seller = "/seller";
 }

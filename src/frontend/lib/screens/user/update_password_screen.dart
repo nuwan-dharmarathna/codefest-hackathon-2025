@@ -13,6 +13,10 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        title: Text(
+          "Update Your Passwords",
+          style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+        ),
       ),
     );
   }

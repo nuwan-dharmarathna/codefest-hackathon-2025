@@ -23,7 +23,9 @@ class FormProgressIndicator extends StatelessWidget {
                   ? (Theme.of(context).brightness == Brightness.light
                         ? Colors.black54
                         : Colors.white60)
-                  : Colors.black12,
+                  : (Theme.of(context).brightness == Brightness.light
+                        ? Colors.white60
+                        : Colors.black54),
               borderRadius: BorderRadius.circular(2),
             ),
           ),

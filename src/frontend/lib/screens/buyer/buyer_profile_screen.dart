@@ -1,8 +1,11 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:frontend/models/user_model.dart';
 import 'package:frontend/providers/theme_provider.dart';
 import 'package:frontend/providers/user_provider.dart';
 import 'package:frontend/routers/router_names.dart';
+import 'package:frontend/services/auth_service.dart';
 import 'package:frontend/widgets/custom_alert_box.dart';
 import 'package:frontend/widgets/custom_user_menu_list_tile.dart';
 import 'package:go_router/go_router.dart';
@@ -160,7 +163,11 @@ class _BuyerProfileScreenState extends State<BuyerProfileScreen> {
                             context,
                           ).colorScheme.onSurface.withOpacity(0.2),
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          GoRouter.of(
+                            context,
+                          ).pushNamed(RouterNames.editUserDetails);
+                        },
                         child: Text("Edit Profile"),
                       ),
                     ),
@@ -207,7 +214,24 @@ class _BuyerProfileScreenState extends State<BuyerProfileScreen> {
                     CustomUserMenuListTile(
                       title: "Logout",
                       leadingIcon: Icons.logout_rounded,
-                      onPressed: () {},
+                      onPressed: () {
+                        AuthApiService apiService = AuthApiService();
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (context) => _logoutDialogBox(
+                            context,
+                            () {
+                              log("Logout Cancelled");
+                            },
+                            () async {
+                              await apiService.logout();
+                              userProvider.clearUser();
+                              context.goNamed(RouterNames.signIn);
+                            },
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -218,4 +242,47 @@ class _BuyerProfileScreenState extends State<BuyerProfileScreen> {
       ),
     );
   }
+}
+
+Widget _logoutDialogBox(
+  BuildContext context,
+  VoidCallback onCancel,
+  VoidCallback onConfirm,
+) {
+  return AlertDialog(
+    title: Text("Logout"),
+    content: Text("Are you sure you want to logout?"),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+    actionsAlignment: MainAxisAlignment.spaceBetween,
+    actions: [
+      // Cancel Button
+      TextButton(
+        onPressed: () {
+          Navigator.of(context).pop();
+          onCancel.call();
+        },
+        child: Text(
+          "Cancel",
+          style: Theme.of(context).textTheme.labelLarge?.copyWith(
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
+        ),
+      ),
+      TextButton(
+        onPressed: () {
+          Navigator.of(context).pop(); // Close dialog
+          onConfirm(); // Execute logout
+        },
+        style: TextButton.styleFrom(
+          foregroundColor: Theme.of(context).colorScheme.error,
+        ),
+        child: Text(
+          "Logout",
+          style: Theme.of(context).textTheme.labelLarge?.copyWith(
+            color: Theme.of(context).colorScheme.error,
+          ),
+        ),
+      ),
+    ],
+  );
 }

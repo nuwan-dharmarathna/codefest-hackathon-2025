@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
           theme: lightMode,
           darkTheme: darkMode,
           themeMode: themeProvider.themeMode,
-          routerConfig: RouterClass.router,
+          routerConfig: RouterClass().router,
         );
       },
     );

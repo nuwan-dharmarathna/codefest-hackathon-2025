@@ -108,8 +108,6 @@ class AuthApiService {
         return false; // No token exists
       }
 
-      log("Token:-> $token");
-
       // 2. Decode JWT to check expiration
       final Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
       final int expirationTimestamp = decodedToken['exp'] as int;
