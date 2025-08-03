@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/providers/seller_category_provider.dart';
 import 'package:frontend/providers/signup_provider.dart';
+import 'package:frontend/providers/theme_provider.dart';
 import 'package:frontend/providers/user_provider.dart';
 import 'package:frontend/routers/router.dart';
 import 'package:frontend/utils/theme_data.dart';
@@ -13,6 +14,7 @@ void main() {
         ChangeNotifierProvider(create: (context) => SignupProvider()),
         ChangeNotifierProvider(create: (context) => SellerCategoryProvider()),
         ChangeNotifierProvider(create: (context) => UserProvider()),
+        ChangeNotifierProvider(create: (context) => ThemeProvider()),
       ],
       child: MyApp(),
     ),
@@ -24,12 +26,17 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: "GoviChain",
-      debugShowCheckedModeBanner: false,
-      theme: lightMode,
-      darkTheme: darkMode,
-      routerConfig: RouterClass.router,
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, child) {
+        return MaterialApp.router(
+          title: "GoviChain",
+          debugShowCheckedModeBanner: false,
+          theme: lightMode,
+          darkTheme: darkMode,
+          themeMode: themeProvider.themeMode,
+          routerConfig: RouterClass.router,
+        );
+      },
     );
   }
 }

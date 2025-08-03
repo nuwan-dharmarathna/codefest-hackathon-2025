@@ -47,7 +47,14 @@ class BuyerHomeScreen extends StatelessWidget {
                                 ],
                               ),
                               Spacer(),
-                              Icon(Icons.notifications, size: 25),
+                              IconButton(
+                                onPressed: () {},
+                                icon: Icon(
+                                  Icons.notifications_none_rounded,
+                                  size: 32,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                              ),
                             ],
                           ),
                           SizedBox(height: 25),
