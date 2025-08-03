@@ -1,7 +1,11 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:frontend/models/user_model.dart';
 import 'package:frontend/providers/signup_provider.dart';
 import 'package:frontend/routers/router_names.dart';
+import 'package:frontend/widgets/custom_alert_box.dart';
+import 'package:frontend/widgets/custom_submit_button.dart';
 import 'package:frontend/widgets/custom_text_input.dart';
 import 'package:frontend/widgets/form_progress_indicator.dart';
 import 'package:go_router/go_router.dart';
@@ -16,6 +20,7 @@ class UserInfoPage extends StatefulWidget {
 
 class _UserInfoPageState extends State<UserInfoPage> {
   final _formKey = GlobalKey<FormState>();
+  bool isLoading = false;
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
   final _nicController = TextEditingController();
@@ -40,6 +45,51 @@ class _UserInfoPageState extends State<UserInfoPage> {
     _businessNameController.dispose();
     _businessRegNoController.dispose();
     super.dispose();
+  }
+
+  void _registerUser(UserModel user, SignupProvider provider) async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      final res = await provider.signUpUser(user);
+
+      if (!mounted) return;
+
+      if (res == 200) {
+        provider.clear();
+        showDialog(
+          context: context, // Make sure you have access to the BuildContext
+          builder: (BuildContext context) {
+            return CustomAlertBox(
+              icon: Icons.done,
+              title: "Success",
+              message: "User Registration Success!",
+            );
+          },
+        );
+        context.goNamed(RouterNames.signIn);
+      } else {
+        provider.clear();
+        context.goNamed(RouterNames.signUp);
+      }
+    } catch (e) {
+      log("Registration Failed In User Info Page :  $e");
+      showDialog(
+        context: context, // Make sure you have access to the BuildContext
+        builder: (BuildContext context) {
+          return CustomAlertBox(
+            icon: Icons.close,
+            title: "Somethig went wrong",
+            message: e.toString(),
+          );
+        },
+      );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   @override
@@ -272,11 +322,26 @@ class _UserInfoPageState extends State<UserInfoPage> {
                 ),
               ),
               Container(
-                margin: EdgeInsets.only(bottom: 40, top: 15),
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () async {
+                margin: EdgeInsets.only(top: 15),
+                width: MediaQuery.of(context).size.width * 0.95,
+                child: CustomSubmitButton(
+                  isLoading: isLoading,
+                  onPressed: () {
                     if (_formKey.currentState!.validate()) {
+                      if (_passwordConfirmController.text !=
+                          _passwordController.text) {
+                        showDialog(
+                          context:
+                              context, // Make sure you have access to the BuildContext
+                          builder: (BuildContext context) {
+                            return CustomAlertBox(
+                              icon: Icons.close,
+                              title: "Passwords Incorrect!",
+                              message: "Password Fields didn't matched",
+                            );
+                          },
+                        );
+                      }
                       UserModel newUser = UserModel();
                       if (role == UserRole.buyer) {
                         newUser = UserModel(
@@ -308,34 +373,13 @@ class _UserInfoPageState extends State<UserInfoPage> {
                           businessRegistrationNo: _businessRegNoController.text,
                         );
                       }
-                      try {
-                        final res = await signupProvider.signUpUser(newUser);
-                        if (res == 200) {
-                          signupProvider.clear();
-                          GoRouter.of(context).pushNamed(RouterNames.signIn);
-                        } else {
-                          signupProvider.clear();
-                          GoRouter.of(context).pushNamed(RouterNames.signUp);
-                        }
-                      } catch (e) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Error signup user: $e")),
-                        );
-                      }
+                      _registerUser(newUser, signupProvider);
                     }
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(
-                      context,
-                    ).colorScheme.onSurface.withOpacity(0.1),
-                    padding: EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: Text("Sumbit", style: TextStyle(fontSize: 18)),
+                  lableText: "Submit",
                 ),
               ),
+              SizedBox(height: 35),
             ],
           ),
         );

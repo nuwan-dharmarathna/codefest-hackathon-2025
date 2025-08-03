@@ -1,5 +1,10 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:frontend/routers/router_names.dart';
+import 'package:frontend/services/auth_service.dart';
+import 'package:frontend/widgets/custom_alert_box.dart';
+import 'package:frontend/widgets/custom_submit_button.dart';
 import 'package:frontend/widgets/custom_text_input.dart';
 import 'package:go_router/go_router.dart';
 
@@ -12,16 +17,50 @@ class SigninScreen extends StatefulWidget {
 
 class _SigninScreenState extends State<SigninScreen> {
   final _formKey = GlobalKey<FormState>();
+  bool isLoading = false;
   final _sluidNoController = TextEditingController();
-  final _nicNoController = TextEditingController();
   final _passwordController = TextEditingController();
+  final AuthApiService _apiService = AuthApiService();
 
   @override
   void dispose() {
     _sluidNoController.dispose();
-    _nicNoController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  void _signInUser() async {
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        isLoading = true;
+      });
+      try {
+        await _apiService.signInUser(
+          sludiNo: _sluidNoController.text,
+          password: _passwordController.text,
+        );
+
+        if (!mounted) return;
+
+        context.goNamed(RouterNames.splash);
+      } catch (e) {
+        log("Registration Failed In User Info Page :  $e");
+        showDialog(
+          context: context, // Make sure you have access to the BuildContext
+          builder: (BuildContext context) {
+            return CustomAlertBox(
+              icon: Icons.close,
+              title: "Somethig went wrong",
+              message: e.toString(),
+            );
+          },
+        );
+      } finally {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    }
   }
 
   @override
@@ -80,8 +119,8 @@ class _SigninScreenState extends State<SigninScreen> {
                       }
                       return null;
                     },
-                    onSaved: (newValue) =>
-                        _sluidNoController.text = newValue ?? '',
+                    onSaved: (newValue) {},
+                    controller: _sluidNoController,
                     obscureText: false,
                   ),
 
@@ -97,37 +136,43 @@ class _SigninScreenState extends State<SigninScreen> {
                       }
                       return null;
                     },
-                    onSaved: (newValue) =>
-                        _passwordController.text = newValue ?? '',
+                    onSaved: (newValue) {},
+                    controller: _passwordController,
                     obscureText: true,
                   ),
 
                   SizedBox(height: 6),
                   Align(
                     alignment: Alignment.centerRight,
-                    child: GestureDetector(
-                      // Todo: Need to impl
-                      onTap: () {},
-                      child: Text("Forgot Password?"),
+                    child: TextButton(
+                      onPressed: () {
+                        showDialog(
+                          context:
+                              context, // Make sure you have access to the BuildContext
+                          builder: (BuildContext context) {
+                            return CustomAlertBox(
+                              icon: Icons.warning_amber_rounded,
+                              title: "Warning!",
+                              message:
+                                  "Coming soon!\nThis feature is still in development.",
+                            );
+                          },
+                        );
+                      },
+                      child: Text(
+                        "Forgot Password?",
+                        style: TextStyle(fontSize: 14),
+                      ),
                     ),
                   ),
-
                   const SizedBox(height: 25),
 
                   SizedBox(
                     width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(
-                          context,
-                        ).colorScheme.onSurface.withOpacity(0.1),
-                        padding: EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: Text("Sign In", style: TextStyle(fontSize: 18)),
+                    child: CustomSubmitButton(
+                      isLoading: isLoading,
+                      onPressed: _signInUser,
+                      lableText: "Sign In",
                     ),
                   ),
                 ],

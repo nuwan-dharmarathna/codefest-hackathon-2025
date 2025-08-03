@@ -100,7 +100,7 @@ exports.signIn = catchAsync(async(req, res, next)=>{
 
     // 1) check the fields are exist
     if (!sludiNo || !password) {
-        return next(new AppError('Please provide NIC No and password', 400)); 
+        return next(new AppError('Please provide SLUDI Number and password', 400)); 
     }
 
     // 2) check the user exist and password is correct
