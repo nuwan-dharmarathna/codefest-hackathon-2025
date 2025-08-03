@@ -11,14 +11,14 @@ import 'package:frontend/widgets/custom_user_menu_list_tile.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-class BuyerProfileScreen extends StatefulWidget {
-  const BuyerProfileScreen({super.key});
+class UserProfileScreen extends StatefulWidget {
+  const UserProfileScreen({super.key});
 
   @override
-  State<BuyerProfileScreen> createState() => _BuyerProfileScreenState();
+  State<UserProfileScreen> createState() => _UserProfileScreenState();
 }
 
-class _BuyerProfileScreenState extends State<BuyerProfileScreen> {
+class _UserProfileScreenState extends State<UserProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Padding(

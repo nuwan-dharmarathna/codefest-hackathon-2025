@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/screens/buyer/buyer_favourites_screen.dart';
-import 'package:frontend/screens/buyer/buyer_home_screen.dart';
-import 'package:frontend/screens/buyer/buyer_profile_screen.dart';
-import 'package:frontend/screens/buyer/buyer_tenders_screen.dart';
+import 'package:frontend/screens/user/buyer/buyer_favourites_screen.dart';
+import 'package:frontend/screens/user/buyer/buyer_home_screen.dart';
+import 'package:frontend/screens/user/user_profile_screen.dart';
+import 'package:frontend/screens/user/user_tenders_screen.dart';
 
 class BuyerMainScreen extends StatefulWidget {
   const BuyerMainScreen({super.key});
@@ -16,9 +16,9 @@ class _BuyerMainScreenState extends State<BuyerMainScreen> {
 
   static const List<Widget> _pages = [
     BuyerHomeScreen(),
-    BuyerTendersScreen(),
+    UserTendersScreen(),
     BuyerFavouritesScreen(),
-    BuyerProfileScreen(),
+    UserProfileScreen(),
   ];
 
   void _onBottomItemTapped(int index) {

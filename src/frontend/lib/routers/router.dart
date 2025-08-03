@@ -1,11 +1,11 @@
 import 'package:frontend/routers/router_names.dart';
-import 'package:frontend/screens/buyer/buyer_main_screen.dart';
-import 'package:frontend/screens/buyer/buyer_purchases_screen.dart';
+import 'package:frontend/screens/user/buyer/buyer_main_screen.dart';
+import 'package:frontend/screens/user/buyer/buyer_purchases_screen.dart';
 import 'package:frontend/screens/onboarding_screen.dart';
 import 'package:frontend/screens/registration/select_location_page.dart';
 import 'package:frontend/screens/registration/seller_category_page.dart';
 import 'package:frontend/screens/registration/user_info_page.dart';
-import 'package:frontend/screens/seller/seller_main_screen.dart';
+import 'package:frontend/screens/user/seller/seller_main_screen.dart';
 import 'package:frontend/screens/sign_in_screen.dart';
 import 'package:frontend/screens/sign_up_screen.dart';
 import 'package:frontend/screens/splash_screen.dart';
@@ -16,7 +16,7 @@ import 'package:frontend/widgets/otp_form.dart';
 import 'package:go_router/go_router.dart';
 
 class RouterClass {
-  final router = GoRouter(
+  static final router = GoRouter(
     initialLocation: "/",
     routes: [
       GoRoute(

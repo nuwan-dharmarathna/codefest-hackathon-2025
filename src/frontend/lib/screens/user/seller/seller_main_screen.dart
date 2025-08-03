@@ -10,6 +10,6 @@ class SellerMainScreen extends StatefulWidget {
 class _SellerMainScreenState extends State<SellerMainScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: Text("Seller"));
+    return Scaffold(body: SafeArea(child: Text("Seller Main Screen")));
   }
 }

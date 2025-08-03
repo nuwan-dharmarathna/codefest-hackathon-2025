@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class BuyerTendersScreen extends StatelessWidget {
-  const BuyerTendersScreen({super.key});
+class UserTendersScreen extends StatelessWidget {
+  const UserTendersScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
