@@ -1,5 +1,5 @@
 const express = require('express');
-const sanitize = require('perfect-express-sanitizer');
+const mongoSanitize = require('express-mongo-sanitize');
 const cookieParser = require('cookie-parser');
 
 const AppError = require('./utils/appError');
@@ -24,13 +24,7 @@ app.use(express.json({ limit: '100kb' }));
 app.use(express.urlencoded({ extended: true }));
 
 //  Data sanitization
-app.use(
-  sanitize.clean({
-    xss: true,
-    noSql: true,
-    sql: true,
-  }),
-);
+app.use(mongoSanitize());
 
 // Request logging middleware - Put it here
 app.use(requestLogger);

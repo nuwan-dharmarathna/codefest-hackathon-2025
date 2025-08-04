@@ -10,6 +10,11 @@ const sellerCategorySchema = new mongoose.Schema({
     type: String,
     unique: true,
   },
+  nameOnBuyerSide: {
+    type: String,
+  },
+  imageOnSellerSide: String,
+  imageOnBuyerSide: String,
   description: {
     type: String,
     maxlength: [30, 'Description cannot exceed 30 characters']
@@ -19,6 +24,7 @@ const sellerCategorySchema = new mongoose.Schema({
     default: Date.now
   }
 });
+
 
 sellerCategorySchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });

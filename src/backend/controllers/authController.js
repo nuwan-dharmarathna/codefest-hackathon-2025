@@ -174,7 +174,8 @@ exports.updateMyDetails = catchAsync(async (req, res, next) => {
     lastName: req.body.lastName,
     phone: req.body.phone,
     email: req.body.email,
-    location: req.body.location
+    location: req.body.location,
+    image : req.body.image,
   };
 
   // For sellers, add business-specific fields

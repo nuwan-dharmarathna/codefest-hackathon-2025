@@ -85,7 +85,8 @@ const BaseUserSchema = new Schema({
   },
   lastLogin: {
     type: Date
-  }
+  },
+  image : String
 }, options);
 
 

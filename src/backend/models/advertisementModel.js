@@ -78,15 +78,7 @@ const advertisementSchema = new Schema({
       message: 'Price tiers have overlapping quantities or no tiers provided'
     }
   },
-  images: [{
-    type: String,
-    validate: {
-      validator: function(v) {
-        return /\.(jpe?g|png|gif|bmp)$/i.test(v);
-      },
-      message: props => `${props.value} is not a valid image file!`
-    }
-  }],
+  images: [String],
   createdAt: {
     type: Date,
     default: Date.now
