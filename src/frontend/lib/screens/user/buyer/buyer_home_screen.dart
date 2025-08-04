@@ -155,7 +155,7 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
                               return Padding(
                                 padding: const EdgeInsets.only(right: 12),
                                 child: CustomCategoryCard(
-                                  isSelected: false,
+                                  isSelected: true,
                                   title: category.nameOnBuyerSide,
                                   imageUrl: category.imageOnBuyerSide,
                                   onTap: () {
@@ -183,11 +183,18 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
                         Container(
                           height: 200,
                           decoration: BoxDecoration(
-                            color: Colors.grey[200],
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: const Center(
-                            child: Text("Featured products will appear here"),
+                          child: Center(
+                            child: Text(
+                              "Featured products will appear here",
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
+                            ),
                           ),
                         ),
 
