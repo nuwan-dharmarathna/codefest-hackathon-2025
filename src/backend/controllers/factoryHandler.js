@@ -84,7 +84,7 @@ exports.getAll = (Model) =>
 
     const featues = new ApiFeatures(Model.find(filter), req.query)
       .filter()
-      .sort()
+      .sort({createdAt : 1})
       .limitFields()
       .paginate();
 

@@ -8,21 +8,41 @@ class SellerCategoryProvider extends ChangeNotifier {
   final SellerCategoryService _sellerCategoryService = SellerCategoryService();
 
   List<SellerCategoryModel> _sellerCategories = [];
+  bool _isLoading = false;
+  String _errorMessage = '';
 
-  // getter
+  // Getters
   List<SellerCategoryModel> get sellerCategories => _sellerCategories;
+  bool get isLoading => _isLoading;
+  String get errorMessage => _errorMessage;
 
-  //fetch categories when the provider is initialized
-  SellerCategoryProvider() {
-    fetchAllCategories();
+  // Constructor - now with optional immediate fetch
+  SellerCategoryProvider({bool fetchOnInit = true}) {
+    if (fetchOnInit) {
+      fetchAllCategories();
+    }
   }
-  // fetch all categories
+
+  // Fetch all categories with proper state management
   Future<void> fetchAllCategories() async {
     try {
-      _sellerCategories = await _sellerCategoryService.getAllSellerCategories();
+      _isLoading = true;
+      _errorMessage = '';
       notifyListeners();
+
+      _sellerCategories = await _sellerCategoryService.getAllSellerCategories();
     } catch (e) {
-      log("Failed to Fetch Seller Categories : $e");
+      log("Failed to Fetch Seller Categories: $e");
+      _errorMessage = 'Failed to load categories. Please try again.';
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
+  }
+
+  // Clear error message
+  void clearError() {
+    _errorMessage = '';
+    notifyListeners();
   }
 }
