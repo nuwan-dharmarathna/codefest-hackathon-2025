@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+import 'package:frontend/providers/user_provider.dart';
 import 'package:frontend/routers/router_names.dart';
 import 'package:frontend/screens/user/buyer/buyer_main_screen.dart';
 import 'package:frontend/screens/user/buyer/buyer_purchases_screen.dart';
@@ -14,10 +16,12 @@ import 'package:frontend/screens/user/update_password_screen.dart';
 import 'package:frontend/screens/welcome_screen.dart';
 import 'package:frontend/widgets/otp_form.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class RouterClass {
   static final router = GoRouter(
     initialLocation: "/",
+    redirect: _redirectLogic,
     routes: [
       GoRoute(
         path: "/",
@@ -93,4 +97,23 @@ class RouterClass {
       ),
     ],
   );
+
+  static String? _redirectLogic(BuildContext context, GoRouterState state) {
+    // Skip redirection for these routes
+    if (state.matchedLocation == '/' ||
+        state.matchedLocation == '/onboarding' ||
+        state.matchedLocation == '/signIn' ||
+        state.matchedLocation == '/signUp') {
+      return null;
+    }
+
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final isLoggedIn = userProvider.user != null;
+
+    if (!isLoggedIn) {
+      return '/signIn'; // Redirect to sign in if not authenticated
+    }
+
+    return null;
+  }
 }

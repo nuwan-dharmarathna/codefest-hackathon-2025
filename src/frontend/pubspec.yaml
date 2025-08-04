@@ -17,6 +17,7 @@ dependencies:
   http: ^1.4.0
   shared_preferences: ^2.5.3
   jwt_decoder: ^2.0.1
+  intl: ^0.20.2
 
 dev_dependencies:
   flutter_test:
@@ -30,12 +31,6 @@ flutter:
 
   assets:
     - assets/icons/buyer.png
-    - assets/icons/chicken.png
-    - assets/icons/farmer.png
-    - assets/icons/gardening.png
-    - assets/icons/handicrafts.png
-    - assets/icons/juicer.png
-    - assets/icons/meat.png
     - assets/icons/seller.png
     - assets/icons/map.png
     - assets/icons/home.png
