@@ -36,18 +36,22 @@ class SubCategoryService {
       final response = await http.get(Uri.parse('$url/category/$categoryId'));
 
       if (response.statusCode == 200) {
-        log("SubCategories $categoryId fetched success!");
+        log("SubCategories for $categoryId fetched success!");
 
         final Map<String, dynamic> responseBody = json.decode(response.body);
-        final dynamic data = responseBody['data']['data'];
+        final List<dynamic> subCategoriesJson =
+            responseBody['data']['subCategories'];
 
-        return data.map((json) => SubCategoryModel.fromJson(json)).toList();
+        // Convert each item to SubCategoryModel
+        return subCategoriesJson
+            .map((json) => SubCategoryModel.fromJson(json))
+            .toList();
       } else {
         throw Exception('Failed to load tender');
       }
     } catch (e) {
       log("Error fetching SubCategories $categoryId: $e");
-      throw Exception('Failed to load tender');
+      throw Exception('Error fetching SubCategories $categoryId');
     }
   }
 }

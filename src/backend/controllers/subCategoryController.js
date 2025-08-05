@@ -20,7 +20,7 @@ exports.getAllSubCategoriesAccordingToSellerCategory = catchasync(async(req, res
     // get all subcategories related to the seller category
     const subCategories = await SubCategory.find({ 'category': sellerCategory._id });
 
-    res.status(201).json({
+    res.status(200).json({
         status: 'success',
         results: subCategories.length,
         data: {

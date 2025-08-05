@@ -8,25 +8,17 @@ class SubCategoryProvider with ChangeNotifier {
   List<SubCategoryModel> _subCategories = [];
   bool _isLoading = false;
   String? _errorMessage;
-  String? _selectedCategoryId; // Track selected category for subcategories
+  String? _selectedCategoryId;
 
-  // Getters
   List<SubCategoryModel> get subCategories => _subCategories;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   String? get selectedCategoryId => _selectedCategoryId;
 
-  // Get subcategories filtered by category
-  List<SubCategoryModel> getSubCategoriesByCategory(String categoryId) {
-    return _subCategories
-        .where((subCat) => subCat.category == categoryId)
-        .toList();
-  }
-
-  // Fetch all subcategories
   Future<void> fetchAllSubCategories() async {
     try {
       _startLoading();
+      _selectedCategoryId = null; // Clear selection when fetching all
       _subCategories = await _subCategoryService.getAllSubCategories();
       _clearError();
     } catch (e, stackTrace) {
@@ -37,34 +29,53 @@ class SubCategoryProvider with ChangeNotifier {
     }
   }
 
-  // Fetch subcategories for a specific category
-  Future<void> fetchSubCategoriesByCategory(String categoryId) async {
+  Future<List<SubCategoryModel>> fetchSubCategoriesByCategory(
+    String categoryId,
+  ) async {
+    if (_selectedCategoryId == categoryId && _subCategories.isNotEmpty) {
+      return _subCategories;
+    }
+
     try {
-      _startLoading();
+      _isLoading = true;
       _selectedCategoryId = categoryId;
-      _subCategories = await _subCategoryService.getSubCategoriesByCategory(
+      final result = await _subCategoryService.getSubCategoriesByCategory(
         categoryId,
       );
-      _clearError();
+
+      // Only update state and notify after the build phase
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _subCategories = result;
+        _errorMessage = null;
+        _isLoading = false;
+        notifyListeners();
+      });
+
+      return result;
     } catch (e, stackTrace) {
       log(
         "Failed to fetch subcategories for category $categoryId",
         error: e,
         stackTrace: stackTrace,
       );
-      _setError('Failed to load subcategories for this category.');
-    } finally {
-      _stopLoading();
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _errorMessage = 'Failed to load subcategories for this category.';
+        _subCategories = [];
+        _isLoading = false;
+        notifyListeners();
+      });
+
+      return [];
     }
   }
 
-  // Clear selected category
   void clearSelectedCategory() {
     _selectedCategoryId = null;
+    _subCategories = []; // Clear subcategories when no category is selected
     notifyListeners();
   }
 
-  // Helper methods
   void _startLoading() {
     _isLoading = true;
     _errorMessage = null;
@@ -78,14 +89,17 @@ class SubCategoryProvider with ChangeNotifier {
 
   void _setError(String message) {
     _errorMessage = message;
-    _subCategories = []; // Clear data on error
+    _subCategories = [];
+    notifyListeners();
   }
 
   void _clearError() {
-    _errorMessage = null;
+    if (_errorMessage != null) {
+      _errorMessage = null;
+      notifyListeners();
+    }
   }
 
-  // Clear all state
   void reset() {
     _subCategories = [];
     _isLoading = false;
