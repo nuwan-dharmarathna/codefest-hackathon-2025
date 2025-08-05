@@ -7,6 +7,7 @@ import 'package:frontend/screens/onboarding_screen.dart';
 import 'package:frontend/screens/registration/select_location_page.dart';
 import 'package:frontend/screens/registration/seller_category_page.dart';
 import 'package:frontend/screens/registration/user_info_page.dart';
+import 'package:frontend/screens/user/seller/create_advertisement_screen.dart';
 import 'package:frontend/screens/user/seller/seller_main_screen.dart';
 import 'package:frontend/screens/sign_in_screen.dart';
 import 'package:frontend/screens/sign_up_screen.dart';
@@ -94,6 +95,11 @@ class RouterClass {
         path: "/editUserDetails",
         name: RouterNames.editUserDetails,
         builder: (context, state) => EditUserDetailsScreen(),
+      ),
+      GoRoute(
+        path: "/createAdvertisement",
+        name: RouterNames.createAdvertisement,
+        builder: (context, state) => CreateAdvertisementScreen(),
       ),
     ],
   );

@@ -8,7 +8,7 @@ enum Units { kg, g, l, ml, unit, units }
 String unitsToString(Units units) {
   switch (units) {
     case Units.kg:
-      return 'Kg';
+      return 'kg';
     case Units.g:
       return 'g';
     case Units.l:

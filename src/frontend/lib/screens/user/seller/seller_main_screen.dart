@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/screens/user/seller/create_advertisement_screen.dart';
 import 'package:frontend/screens/user/seller/seller_home_screen.dart';
 import 'package:frontend/screens/user/user_profile_screen.dart';
 import 'package:frontend/screens/user/user_tenders_screen.dart';
@@ -16,6 +17,7 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
   static const List<Widget> _pages = [
     SellerHomeScreen(),
     UserTendersScreen(),
+    CreateAdvertisementScreen(),
     UserProfileScreen(),
   ];
 
@@ -84,6 +86,18 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
                   width: MediaQuery.of(context).size.width * 0.06,
                 ),
                 label: "Tenders",
+              ),
+              BottomNavigationBarItem(
+                icon: Image.asset(
+                  "assets/icons/add.png",
+                  color: _selectedIndex == 2
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context).brightness == Brightness.light
+                      ? Colors.black54
+                      : Colors.white54,
+                  width: MediaQuery.of(context).size.width * 0.06,
+                ),
+                label: "Create",
               ),
               BottomNavigationBarItem(
                 icon: Image.asset(

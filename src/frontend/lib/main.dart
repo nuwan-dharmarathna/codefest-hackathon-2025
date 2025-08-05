@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/providers/advertisement_provider.dart';
 import 'package:frontend/providers/category_filter_provider.dart';
 import 'package:frontend/providers/seller_category_provider.dart';
 import 'package:frontend/providers/signup_provider.dart';
@@ -21,6 +22,7 @@ void main() {
         ChangeNotifierProvider(create: (context) => TenderProvider()),
         ChangeNotifierProvider(create: (context) => SubCategoryProvider()),
         ChangeNotifierProvider(create: (context) => CategoryFilterProvider()),
+        ChangeNotifierProvider(create: (context) => AdvertisementProvider()),
       ],
       child: MyApp(),
     ),

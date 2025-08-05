@@ -18,6 +18,7 @@ dependencies:
   shared_preferences: ^2.5.3
   jwt_decoder: ^2.0.1
   intl: ^0.20.2
+  image_picker: ^1.1.2
 
 dev_dependencies:
   flutter_test:
@@ -37,6 +38,7 @@ flutter:
     - assets/icons/tender.png
     - assets/icons/heart.png
     - assets/icons/user.png
+    - assets/icons/add.png
     - assets/images/logo_dark.png
     - assets/images/logo_light.png
     - assets/images/women_hands.jpeg
