@@ -1,28 +1,20 @@
-// widgets/tender_card.dart
 import 'package:flutter/material.dart';
 import 'package:frontend/models/tender_model.dart';
+import 'package:frontend/models/user_model.dart';
 import 'package:intl/intl.dart';
 
-class TenderCard extends StatelessWidget {
+class CustomTenderCard extends StatelessWidget {
   final TenderModel tender;
-  final VoidCallback? onTap;
-  final bool showFullDetails;
+  final VoidCallback onTap;
 
-  const TenderCard({
-    super.key,
-    required this.tender,
-    this.onTap,
-    this.showFullDetails = false,
-  });
+  const CustomTenderCard({Key? key, required this.tender, required this.onTap})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final dateFormat = DateFormat('MMM dd, yyyy - hh:mm a');
-
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       elevation: 2,
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
@@ -32,139 +24,187 @@ class TenderCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Title and Status row
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Expanded(
+                  Flexible(
                     child: Text(
                       tender.title,
-                      style: theme.textTheme.titleMedium?.copyWith(
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  _buildStatusIndicator(context),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: tender.role == UserRole.buyer
+                          ? Colors.blue.shade100
+                          : Colors.green.shade100,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      tender.role == UserRole.buyer ? 'BUYER' : 'SELLER',
+                      style: TextStyle(
+                        color: tender.role == UserRole.buyer
+                            ? Colors.blue.shade800
+                            : Colors.green.shade800,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
                 ],
               ),
-
               const SizedBox(height: 8),
-
-              // Description
-              if (showFullDetails) ...[
-                Text(tender.description, style: theme.textTheme.bodyMedium),
-                const SizedBox(height: 12),
-              ],
-
-              // Category and Subcategory
-              _buildCategoryInfo(context),
-
-              const SizedBox(height: 12),
-
-              // Quantity and Unit
+              Text(
+                tender.description,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(color: Colors.grey.shade600),
+              ),
+              const SizedBox(height: 16),
               Row(
                 children: [
-                  _buildInfoChip(
-                    context,
-                    icon: Icons.scale,
-                    label: '${tender.quantity} ${tender.unit}',
+                  Icon(
+                    Icons.category,
+                    size: 16,
+                    color: Theme.of(context).primaryColor,
                   ),
-                  if (tender.deliveryRequired) ...[
-                    const SizedBox(width: 8),
-                    _buildInfoChip(
-                      context,
-                      icon: Icons.local_shipping,
-                      label: 'Delivery',
-                      color: Colors.blue,
+                  const SizedBox(width: 4),
+                  Text(
+                    'Category',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    tender.category,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  if (tender.subCategory != null) ...[
+                    const SizedBox(width: 16),
+                    Icon(
+                      Icons.subdirectory_arrow_right,
+                      size: 16,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      tender.subCategory!,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ],
                 ],
               ),
-
-              const SizedBox(height: 12),
-
-              // Footer with creator and date
+              const SizedBox(height: 8),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  Icon(
+                    Icons.scale,
+                    size: 16,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  const SizedBox(width: 4),
                   Text(
-                    'Posted ${dateFormat.format(tender.createdAt)}',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: Colors.grey[600],
+                    'Quantity:',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    '${tender.quantity} ${unitsToString(tender.unit)}',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
-                  if (tender.isClosed)
-                    Text(
-                      'Closed',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.error,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
                 ],
               ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Icon(
+                    Icons.calendar_today,
+                    size: 16,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  const SizedBox(width: 4),
+                  Text('Posted:', style: Theme.of(context).textTheme.bodySmall),
+                  const SizedBox(width: 8),
+                  Text(
+                    DateFormat('MMM dd, yyyy').format(tender.createdAt),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+              if (tender.deliveryRequired) ...[
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.local_shipping,
+                      size: 16,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Delivery to:',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        tender.deliveryLocation ?? 'Location not specified',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w500,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+              if (tender.isClosed) ...[
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.red.shade100,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        'CLOSED',
+                        style: TextStyle(
+                          color: Colors.red.shade800,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ],
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildStatusIndicator(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: tender.isClosed ? Colors.red[100] : Colors.green[100],
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Text(
-        tender.isClosed ? 'Closed' : 'Active',
-        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-          color: tender.isClosed ? Colors.red[800] : Colors.green[800],
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCategoryInfo(BuildContext context) {
-    return Wrap(
-      spacing: 8,
-      runSpacing: 4,
-      children: [
-        if (tender.category.isNotEmpty)
-          _buildInfoChip(context, icon: Icons.category, label: tender.category),
-        if (tender.subCategory?.isNotEmpty ?? false)
-          _buildInfoChip(
-            context,
-            icon: Icons.subdirectory_arrow_right,
-            label: tender.subCategory!,
-            color: Colors.orange,
-          ),
-      ],
-    );
-  }
-
-  Widget _buildInfoChip(
-    BuildContext context, {
-    required IconData icon,
-    required String label,
-    Color? color,
-  }) {
-    return Chip(
-      backgroundColor: color?.withOpacity(0.1) ?? Colors.grey[200],
-      labelPadding: const EdgeInsets.symmetric(horizontal: 4),
-      avatar: Icon(icon, size: 16, color: color ?? Colors.grey[700]),
-      label: Text(
-        label,
-        style: Theme.of(
-          context,
-        ).textTheme.labelSmall?.copyWith(color: color ?? Colors.grey[700]),
-      ),
-      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      visualDensity: VisualDensity.compact,
     );
   }
 }
