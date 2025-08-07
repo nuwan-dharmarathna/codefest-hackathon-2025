@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/providers/advertisement_provider.dart';
 import 'package:frontend/providers/seller_category_provider.dart';
 import 'package:frontend/providers/user_provider.dart';
+import 'package:frontend/screens/user/buyer/advertisement_details_screen.dart';
 import 'package:frontend/widgets/category_selector.dart';
 import 'package:frontend/widgets/custom_advertisement_card.dart';
 import 'package:provider/provider.dart';
@@ -131,7 +132,18 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
                           itemBuilder: (context, index) {
                             final ad =
                                 advertisementProvider.advertisements[index];
-                            return AdvertisementCard(ad: ad, onTap: () {});
+                            return AdvertisementCard(
+                              ad: ad,
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        AdvertisementDetailsScreen(ad: ad),
+                                  ),
+                                );
+                              },
+                            );
                           },
                         ),
                       );

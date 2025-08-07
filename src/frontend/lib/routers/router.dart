@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:frontend/models/advertisement_model.dart';
 import 'package:frontend/providers/user_provider.dart';
 import 'package:frontend/routers/router_names.dart';
+import 'package:frontend/screens/user/buyer/advertisement_details_screen.dart';
 import 'package:frontend/screens/user/buyer/buyer_main_screen.dart';
 import 'package:frontend/screens/user/buyer/buyer_purchases_screen.dart';
 import 'package:frontend/screens/onboarding_screen.dart';
@@ -100,6 +104,20 @@ class RouterClass {
         path: "/createAdvertisement",
         name: RouterNames.createAdvertisement,
         builder: (context, state) => CreateAdvertisementScreen(),
+      ),
+      GoRoute(
+        path: "/advertisementDetails",
+        name: RouterNames.advertisementDetails,
+        builder: (context, state) {
+          final advertisementJson =
+              state.uri.queryParameters["advertisementDetails"];
+
+          final advertisement = AdvertisementModel.fromJson(
+            jsonDecode(advertisementJson!),
+          );
+
+          return AdvertisementDetailsScreen(ad: advertisement);
+        },
       ),
     ],
   );

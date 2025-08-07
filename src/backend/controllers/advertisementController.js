@@ -53,7 +53,24 @@ exports.createAdvertisement = catchAsync(async(req, res, next)=>{
 
 exports.getAllAdvertisements = factory.getAll(Advertisement);
 
-exports.getAdvertisement = factory.getOne(Advertisement);
+// exports.getAdvertisement = factory.getOne(Advertisement,);
+
+exports.getAdvertisement = catchAsync(async (req,res, next)=>{
+    const ad = await Advertisement.findById(req.params.id)
+    .populate('category', 'name')
+    .populate('subCategory', 'name');
+
+    if (!ad) {
+        return next(new AppError('No Advertisement found with that ID', 404));
+    }
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        data: ad,
+      },
+    });
+});
 
 exports.updateAdvertisement = catchAsync(async(req, res, next)=>{
     // 1) Check if product exists and belongs to the seller

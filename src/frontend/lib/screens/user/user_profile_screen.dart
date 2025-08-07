@@ -193,7 +193,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     SizedBox(height: 10),
                     userProvider.user?.role == UserRole.buyer
                         ? CustomUserMenuListTile(
-                            title: "My Purchases",
+                            title: "My Orders",
                             leadingIcon: Icons.wallet_rounded,
                             onPressed: () {
                               GoRouter.of(
