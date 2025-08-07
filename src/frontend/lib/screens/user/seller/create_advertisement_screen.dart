@@ -7,6 +7,7 @@ import 'package:frontend/providers/advertisement_provider.dart';
 import 'package:frontend/providers/sub_category_provider.dart';
 import 'package:frontend/providers/user_provider.dart';
 import 'package:frontend/services/image_upload_service.dart';
+import 'package:frontend/widgets/custom_alert_box.dart';
 import 'package:frontend/widgets/custom_dropdown_field.dart';
 import 'package:frontend/widgets/custom_text_input.dart';
 import 'package:image_picker/image_picker.dart';
@@ -32,7 +33,7 @@ class _CreateAdvertisementScreenState extends State<CreateAdvertisementScreen> {
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
   bool isUploadingImages = false;
-  final List<File> _selectedImages = [];
+  List<File> _selectedImages = [];
   final ImagePicker _picker = ImagePicker();
 
   // Form fields
@@ -48,7 +49,7 @@ class _CreateAdvertisementScreenState extends State<CreateAdvertisementScreen> {
   final _newPriceController = TextEditingController();
 
   // Price tiers
-  final List<Map<String, dynamic>> _priceTiers = [
+  List<Map<String, dynamic>> _priceTiers = [
     {'min': '', 'max': '', 'price': ''},
   ];
 
@@ -208,19 +209,24 @@ class _CreateAdvertisementScreenState extends State<CreateAdvertisementScreen> {
     }
     if (!_validatePriceTiers()) return;
 
-    setState(() => isUploadingImages = true);
+    setState(() {
+      isUploadingImages = true;
+      _isLoading = true;
+    });
+
+    // Show loading dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
+    );
 
     try {
       // 1. Upload images first
       final imageUrls = await ImageUploadService.uploadImages(_selectedImages);
 
-      setState(() => _isLoading = true);
-
       // 2. Create advertisement object
       final advertisement = AdvertisementModel(
-        id: '',
-        sellerId: userProvider.user!.id!,
-        categoryId: userProvider.user!.categoryId!,
         subCategoryId: _selectedSubCategory!,
         name: _nameController.text.trim(),
         description: _descriptionController.text.trim(),
@@ -230,7 +236,6 @@ class _CreateAdvertisementScreenState extends State<CreateAdvertisementScreen> {
         deliveryRadius: _deliveryAvailable
             ? double.parse(_deliveryRadiusController.text)
             : null,
-        location: userProvider.user!.location!,
         priceTiers: _priceTiers
             .map(
               (tier) => PriceTier(
@@ -242,22 +247,64 @@ class _CreateAdvertisementScreenState extends State<CreateAdvertisementScreen> {
             )
             .toList(),
         images: imageUrls,
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-        isActive: true,
       );
 
       // 3. Save advertisement
-      await Provider.of<AdvertisementProvider>(
+      final response = await Provider.of<AdvertisementProvider>(
         context,
         listen: false,
       ).createAdvertisement(advertisement);
 
-      if (mounted) {
-        Navigator.of(context).pop(true); // Return success
+      // Close loading dialog
+      if (mounted) Navigator.of(context).pop();
+
+      // Check the response status
+      if (response['status'] == 'success') {
+        // Show success dialog
+        await showDialog(
+          context: context,
+          builder: (context) => CustomAlertBox(
+            title: 'Success',
+            message: 'Advertisement created successfully!',
+            icon: Icons.check_circle,
+            titleColor: Colors.green,
+          ),
+        );
+
+        // Reset the form instead of navigating away
+        if (mounted) {
+          _resetForm();
+        }
+      } else {
+        // Show error from the response
+        final errorMessage =
+            response['message'] ?? 'Failed to create advertisement';
+        showDialog(
+          context: context,
+          builder: (context) => CustomAlertBox(
+            title: 'Error',
+            message: errorMessage,
+            icon: Icons.error,
+            titleColor: Colors.red,
+          ),
+        );
       }
     } catch (e) {
-      _showErrorSnackBar('Error creating advertisement: ${e.toString()}');
+      // Close loading dialog if still open
+      if (mounted) Navigator.of(context).pop();
+
+      // Show error dialog
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (context) => CustomAlertBox(
+            title: 'Error',
+            message: 'Failed to create advertisement: ${e.toString()}',
+            icon: Icons.error,
+            titleColor: Colors.red,
+          ),
+        );
+      }
     } finally {
       if (mounted) {
         setState(() {
@@ -266,6 +313,24 @@ class _CreateAdvertisementScreenState extends State<CreateAdvertisementScreen> {
         });
       }
     }
+  }
+
+  // Add this method to your widget class to reset the form
+  void _resetForm() {
+    _formKey.currentState?.reset();
+    _nameController.clear();
+    _descriptionController.clear();
+    _quantityController.clear();
+    _deliveryRadiusController.clear();
+    setState(() {
+      _selectedImages = [];
+      _selectedSubCategory = null;
+      _selectedUnit = null;
+      _priceTiers = [
+        {'min': '', 'max': '', 'price': ''},
+      ];
+      _deliveryAvailable = false;
+    });
   }
 
   Widget _buildSubCategoryDropdown(SubCategoryProvider subCategoryProvider) {
@@ -415,6 +480,11 @@ class _CreateAdvertisementScreenState extends State<CreateAdvertisementScreen> {
   }
 
   Widget _buildPriceTierItem(int index) {
+    // Return empty container if no price tiers exist
+    if (_priceTiers.isEmpty) {
+      return Container();
+    }
+
     final tier = _priceTiers[index];
     return Container(
       decoration: BoxDecoration(
@@ -660,6 +730,11 @@ class _CreateAdvertisementScreenState extends State<CreateAdvertisementScreen> {
                   _buildImageUploadSection(),
                   const SizedBox(height: 24),
                   ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withOpacity(0.2),
+                    ),
                     onPressed: _isLoading
                         ? null
                         : () => _submitForm(userProvider),

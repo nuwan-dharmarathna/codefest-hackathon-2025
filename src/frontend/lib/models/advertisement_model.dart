@@ -33,9 +33,9 @@ class PriceTier {
 }
 
 class AdvertisementModel {
-  final String id;
-  final String sellerId;
-  final String categoryId;
+  String? id;
+  String? sellerId;
+  String? categoryId;
   final String subCategoryId;
   final String name;
   final String description;
@@ -43,17 +43,17 @@ class AdvertisementModel {
   final Units unit;
   final bool deliveryAvailable;
   final double? deliveryRadius;
-  final String location;
+  String? location;
   final List<PriceTier> priceTiers;
-  final List<String> images;
-  final DateTime createdAt;
-  final DateTime updatedAt;
-  final bool isActive;
+  List<String>? images;
+  DateTime? createdAt;
+  DateTime? updatedAt;
+  bool? isActive;
 
   AdvertisementModel({
-    required this.id,
-    required this.sellerId,
-    required this.categoryId,
+    this.id,
+    this.sellerId,
+    this.categoryId,
     required this.subCategoryId,
     required this.name,
     required this.description,
@@ -61,12 +61,12 @@ class AdvertisementModel {
     required this.unit,
     required this.deliveryAvailable,
     this.deliveryRadius,
-    required this.location,
+    this.location,
     required this.priceTiers,
-    required this.images,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.isActive,
+    this.images,
+    this.createdAt,
+    this.updatedAt,
+    this.isActive,
   });
 
   factory AdvertisementModel.fromJson(Map<String, dynamic> json) {
@@ -94,8 +94,6 @@ class AdvertisementModel {
 
   Map<String, dynamic> toJson() {
     return {
-      'seller': sellerId,
-      'category': categoryId,
       'subCategory': subCategoryId,
       'name': name,
       'description': description,
@@ -103,10 +101,8 @@ class AdvertisementModel {
       'unit': unitsToString(unit),
       'deliveryAvailable': deliveryAvailable,
       'deliveryRadius': deliveryRadius,
-      'location': location,
       'priceTiers': priceTiers.map((x) => x.toJson()).toList(),
       'images': images,
-      'isActive': isActive,
     };
   }
 }

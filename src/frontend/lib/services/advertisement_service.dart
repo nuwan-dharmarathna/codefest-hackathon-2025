@@ -123,22 +123,22 @@ class AdvertisementService {
     }
   }
 
-  Future<AdvertisementModel> createAdvertisement(
+  Future<Map<String, dynamic>> createAdvertisement(
     AdvertisementModel advertisement,
   ) async {
     try {
+      log("Headers: $_getHeaders()");
       final response = await http.post(
         Uri.parse(url),
         headers: await _getHeaders(),
+        body: jsonEncode(advertisement),
       );
 
       if (response.statusCode == 201) {
         log("Advertisement Created Suceess!");
-        return AdvertisementModel.fromJson(
-          json.decode(response.body)['data']['data'],
-        );
+        return json.decode(response.body);
       } else {
-        throw Exception('Failed to create tender');
+        throw Exception('Failed to create Advertisement');
       }
     } catch (e) {
       log("Error creating Advertisement : $e");

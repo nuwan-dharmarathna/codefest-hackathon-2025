@@ -102,7 +102,7 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
               BottomNavigationBarItem(
                 icon: Image.asset(
                   "assets/icons/heart.png",
-                  color: _selectedIndex == 2
+                  color: _selectedIndex == 3
                       ? Theme.of(context).colorScheme.primary
                       : Theme.of(context).brightness == Brightness.light
                       ? Colors.black54
@@ -114,7 +114,7 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
               BottomNavigationBarItem(
                 icon: Image.asset(
                   "assets/icons/user.png",
-                  color: _selectedIndex == 3
+                  color: _selectedIndex == 4
                       ? Theme.of(context).colorScheme.primary
                       : Theme.of(context).brightness == Brightness.light
                       ? Colors.black54

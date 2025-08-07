@@ -71,7 +71,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                         color: theme.hintColor,
                       ),
                       const SizedBox(width: 4),
-                      Text(ad.location),
+                      Text(ad.location!),
                       const Spacer(),
                       if (ad.deliveryAvailable)
                         Row(
@@ -157,7 +157,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
   }
 
   Widget _buildImageGallery(BuildContext context) {
-    if (ad.images.isEmpty) {
+    if (ad.images!.isEmpty) {
       return Container(
         height: 150,
         decoration: BoxDecoration(
@@ -178,10 +178,10 @@ class AdvertisementDetailsScreen extends StatelessWidget {
           children: [
             // Horizontal scrollable images
             PageView.builder(
-              itemCount: ad.images.length,
+              itemCount: ad.images!.length,
               itemBuilder: (context, index) {
                 return CachedNetworkImage(
-                  imageUrl: ad.images[index],
+                  imageUrl: ad.images![index],
                   width: double.infinity,
                   fit: BoxFit.cover,
                   placeholder: (context, url) =>
@@ -192,7 +192,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
             ),
 
             // Image count indicator
-            if (ad.images.length > 1)
+            if (ad.images!.length > 1)
               Positioned(
                 bottom: 8,
                 right: 8,
@@ -206,21 +206,21 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
-                    '${ad.images.length}',
+                    '${ad.images!.length}',
                     style: const TextStyle(color: Colors.white, fontSize: 12),
                   ),
                 ),
               ),
 
             // Page indicator dots
-            if (ad.images.length > 1)
+            if (ad.images!.length > 1)
               Positioned(
                 left: 0,
                 right: 0,
                 bottom: 8,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(ad.images.length, (index) {
+                  children: List.generate(ad.images!.length, (index) {
                     return Container(
                       margin: const EdgeInsets.symmetric(horizontal: 2),
                       width: 6,

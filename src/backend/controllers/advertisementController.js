@@ -29,6 +29,7 @@ exports.createAdvertisement = catchAsync(async(req, res, next)=>{
         description: req.body.description,
         quantity: req.body.quantity,
         unit: req.body.unit,
+        images: req.body.images,
         deliveryAvailable: req.body.deliveryAvailable,
         location: req.body.location || seller.location,
         priceTiers: req.body.priceTiers

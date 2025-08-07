@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/providers/advertisement_provider.dart';
 import 'package:frontend/providers/seller_category_provider.dart';
 import 'package:frontend/providers/user_provider.dart';
 import 'package:frontend/widgets/category_selector.dart';
+import 'package:frontend/widgets/custom_advertisement_card.dart';
 import 'package:provider/provider.dart';
 
 class BuyerHomeScreen extends StatefulWidget {
@@ -12,6 +14,18 @@ class BuyerHomeScreen extends StatefulWidget {
 }
 
 class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // load all advertisements
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<AdvertisementProvider>(
+        context,
+        listen: false,
+      ).loadAdvertisements();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -91,53 +105,37 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
                       const SizedBox(height: 15),
                     ],
                   ),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          Container(
-                            width: MediaQuery.of(context).size.width * 0.9,
-                            height: MediaQuery.of(context).size.height * 0.2,
+                  Consumer<AdvertisementProvider>(
+                    builder: (context, advertisementProvider, child) {
+                      if (advertisementProvider.isLoading) {
+                        return const Expanded(
+                          child: Center(child: CircularProgressIndicator()),
+                        );
+                      }
 
-                            decoration: BoxDecoration(
-                              color: Colors.amber,
-                              borderRadius: BorderRadius.circular(20),
+                      if (advertisementProvider.error != null) {
+                        return Expanded(
+                          child: Center(
+                            child: Text(
+                              'Error: ${advertisementProvider.error}',
                             ),
                           ),
-                          SizedBox(height: 15),
-                          Container(
-                            width: MediaQuery.of(context).size.width * 0.9,
-                            height: MediaQuery.of(context).size.height * 0.2,
-
-                            decoration: BoxDecoration(
-                              color: Colors.amber,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                          ),
-                          SizedBox(height: 15),
-                          Container(
-                            width: MediaQuery.of(context).size.width * 0.9,
-                            height: MediaQuery.of(context).size.height * 0.2,
-
-                            decoration: BoxDecoration(
-                              color: Colors.amber,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                          ),
-                          SizedBox(height: 15),
-                          Container(
-                            width: MediaQuery.of(context).size.width * 0.9,
-                            height: MediaQuery.of(context).size.height * 0.2,
-
-                            decoration: BoxDecoration(
-                              color: Colors.amber,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                          ),
-                          SizedBox(height: 15),
-                        ],
-                      ),
-                    ),
+                        );
+                      }
+                      return Expanded(
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          physics: AlwaysScrollableScrollPhysics(),
+                          itemCount:
+                              advertisementProvider.advertisements.length,
+                          itemBuilder: (context, index) {
+                            final ad =
+                                advertisementProvider.advertisements[index];
+                            return AdvertisementCard(ad: ad, onTap: () {});
+                          },
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),

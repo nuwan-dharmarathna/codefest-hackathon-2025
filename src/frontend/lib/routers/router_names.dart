@@ -19,4 +19,5 @@ class RouterNames {
   static const String editUserDetails = "/editUserDetails";
   static const String seller = "/seller";
   static const String createAdvertisement = "/createAdvertisement";
+  static const String advertisementDetails = "/advertisementDetails";
 }

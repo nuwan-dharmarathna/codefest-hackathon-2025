@@ -47,7 +47,9 @@ class AdvertisementProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> createAdvertisement(AdvertisementModel advertisement) async {
+  Future<Map<String, dynamic>> createAdvertisement(
+    AdvertisementModel advertisement,
+  ) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -56,10 +58,28 @@ class AdvertisementProvider extends ChangeNotifier {
       final newAd = await _advertisementService.createAdvertisement(
         advertisement,
       );
-      _advertisements.add(newAd);
-      _error = null;
+
+      if (newAd['status'] == 'success') {
+        return newAd;
+      }
+
+      return {
+        'status': 'failed',
+        'error':
+            newAd['error'] ??
+            {
+              'statusCode': 400,
+              'message': newAd['message'] ?? 'Registration failed',
+            },
+        'message': newAd['message'] ?? 'Registration failed',
+      };
     } catch (e) {
       _error = e.toString();
+      return {
+        'status': 'failed',
+        'error': {'statusCode': 500, 'message': 'Network error'},
+        'message': 'Failed to connect to server',
+      };
     } finally {
       _isLoading = false;
       notifyListeners();

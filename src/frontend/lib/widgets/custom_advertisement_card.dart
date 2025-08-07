@@ -16,6 +16,19 @@ class AdvertisementCard extends StatefulWidget {
 class _AdvertisementCardState extends State<AdvertisementCard> {
   late PageController _pageController;
   int _currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(); // Initialize the controller here
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose(); // Don't forget to dispose it
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -33,7 +46,7 @@ class _AdvertisementCardState extends State<AdvertisementCard> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Image Gallery
-            _buildImageGallery(context, _pageController, _currentPage),
+            _buildImageGallery(context),
 
             // Content
             Padding(
@@ -88,7 +101,7 @@ class _AdvertisementCardState extends State<AdvertisementCard> {
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        widget.ad.location,
+                        widget.ad.location!,
                         style: theme.textTheme.bodySmall,
                       ),
                       const Spacer(),
@@ -120,12 +133,8 @@ class _AdvertisementCardState extends State<AdvertisementCard> {
     );
   }
 
-  Widget _buildImageGallery(
-    BuildContext context,
-    PageController controller,
-    int currentPage,
-  ) {
-    if (widget.ad.images.isEmpty) {
+  Widget _buildImageGallery(BuildContext context) {
+    if (widget.ad.images!.isEmpty) {
       return Container(
         height: 150,
         decoration: BoxDecoration(
@@ -146,8 +155,8 @@ class _AdvertisementCardState extends State<AdvertisementCard> {
           ClipRRect(
             borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
             child: PageView.builder(
-              controller: controller,
-              itemCount: widget.ad.images.length,
+              controller: _pageController,
+              itemCount: widget.ad.images!.length,
               onPageChanged: (index) {
                 setState(() {
                   _currentPage = index;
@@ -155,7 +164,7 @@ class _AdvertisementCardState extends State<AdvertisementCard> {
               },
               itemBuilder: (context, index) {
                 return CachedNetworkImage(
-                  imageUrl: widget.ad.images[index],
+                  imageUrl: widget.ad.images![index],
                   width: double.infinity,
                   fit: BoxFit.cover,
                   placeholder: (context, url) =>
@@ -167,14 +176,14 @@ class _AdvertisementCardState extends State<AdvertisementCard> {
           ),
 
           // Custom page indicator
-          if (widget.ad.images.length > 1)
+          if (widget.ad.images!.length > 1)
             Positioned(
               left: 0,
               right: 0,
               bottom: 8,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(widget.ad.images.length, (index) {
+                children: List.generate(widget.ad.images!.length, (index) {
                   return Container(
                     margin: const EdgeInsets.symmetric(horizontal: 4),
                     width: 8,
