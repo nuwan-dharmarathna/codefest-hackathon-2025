@@ -32,6 +32,30 @@ class TenderService {
       );
 
       if (response.statusCode == 200) {
+        log("Get All Tender API Call success");
+        final Map<String, dynamic> responseBody = json.decode(response.body);
+
+        final List<dynamic> data = responseBody['data']['data'];
+        return data.map((json) => TenderModel.fromJson(json)).toList();
+      } else {
+        throw Exception('Failed to load Tenders');
+      }
+    } catch (e) {
+      throw Exception('Failed to load tenders');
+    }
+  }
+
+  Future<List<TenderModel>> fetchTendersBasedOnCategory() async {
+    try {
+      final response = await http.get(
+        Uri.parse("$url/seller"),
+        headers: await _getHeaders(),
+      );
+
+      log("Response -> ${response.body}");
+
+      if (response.statusCode == 200) {
+        log("Get All Tender API Call success");
         final Map<String, dynamic> responseBody = json.decode(response.body);
 
         final List<dynamic> data = responseBody['data']['data'];

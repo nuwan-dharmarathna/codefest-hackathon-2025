@@ -72,6 +72,20 @@ exports.getAllTenders = factory.getAll(Tender);
 
 exports.getTender = factory.getOne(Tender);
 
+exports.getTendersBasedOnSellerCategory = catchAsync(async(req, res, next)=>{
+  const user = req.user;
+
+  const tenders = await Tender.find({category : user.category});
+
+  res.status(200).json({
+    status : 'success',
+    results : tenders.length,
+    data :{
+      tenders
+    }
+  })
+});
+
 exports.getAllBidsBasedonTender = catchAsync(async(req, res, next)=>{
   const tender = await Tender.findById(req.params.id);
   if (!tender) {

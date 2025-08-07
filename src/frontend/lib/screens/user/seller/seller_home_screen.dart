@@ -5,8 +5,29 @@ import 'package:frontend/screens/user/advertisement_details_screen.dart';
 import 'package:frontend/widgets/custom_advertisement_card.dart';
 import 'package:provider/provider.dart';
 
-class SellerHomeScreen extends StatelessWidget {
+class SellerHomeScreen extends StatefulWidget {
   const SellerHomeScreen({super.key});
+
+  @override
+  State<SellerHomeScreen> createState() => _SellerHomeScreenState();
+}
+
+class _SellerHomeScreenState extends State<SellerHomeScreen> {
+  Future<void> _refreshAdvertisements() async {
+    await Provider.of<AdvertisementProvider>(
+      context,
+      listen: false,
+    ).loadAdvertisements();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Load advertisements when the screen is first displayed
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _refreshAdvertisements();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,23 +77,37 @@ class SellerHomeScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 25),
 
-                      // Popular Categories title
-                      Text(
-                        "My Advertisements",
-                        style: Theme.of(context).textTheme.titleLarge,
+                      // My Advertisements title with refresh button
+                      Row(
+                        children: [
+                          Text(
+                            "My Advertisements",
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                          const Spacer(),
+                          IconButton(
+                            icon: Icon(
+                              Icons.refresh,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                            onPressed: () => _refreshAdvertisements(),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 10),
                     ],
                   ),
                   Consumer<AdvertisementProvider>(
                     builder: (context, advertisementProvider, child) {
-                      if (advertisementProvider.isLoading) {
+                      if (advertisementProvider.isLoading &&
+                          advertisementProvider.advertisements.isEmpty) {
                         return const Expanded(
                           child: Center(child: CircularProgressIndicator()),
                         );
                       }
 
-                      if (advertisementProvider.error != null) {
+                      if (advertisementProvider.error != null &&
+                          advertisementProvider.advertisements.isEmpty) {
                         return Expanded(
                           child: Center(
                             child: Text(
@@ -81,28 +116,32 @@ class SellerHomeScreen extends StatelessWidget {
                           ),
                         );
                       }
+
                       return Expanded(
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          physics: AlwaysScrollableScrollPhysics(),
-                          itemCount:
-                              advertisementProvider.advertisements.length,
-                          itemBuilder: (context, index) {
-                            final ad =
-                                advertisementProvider.advertisements[index];
-                            return AdvertisementCard(
-                              ad: ad,
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        AdvertisementDetailsScreen(ad: ad),
-                                  ),
-                                );
-                              },
-                            );
-                          },
+                        child: RefreshIndicator(
+                          onRefresh: _refreshAdvertisements,
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            itemCount:
+                                advertisementProvider.advertisements.length,
+                            itemBuilder: (context, index) {
+                              final ad =
+                                  advertisementProvider.advertisements[index];
+                              return AdvertisementCard(
+                                ad: ad,
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          AdvertisementDetailsScreen(ad: ad),
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                          ),
                         ),
                       );
                     },

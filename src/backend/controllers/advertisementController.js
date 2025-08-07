@@ -141,4 +141,21 @@ exports.getAdvertisementsBySubCategory = catchAsync(async(req,res,next)=>{
     });
 });
 
+exports.getAdvertisementsByUser = catchAsync(async(req, res, next) => {
+    const user = req.user;
+    
+    // Add validation for user._id
+    if (!user || !user._id) {
+        return next(new AppError('User not authenticated or invalid user ID', 401));
+    }
+
+    const advertisements = await Advertisement.find({ seller: user._id });
+
+    res.status(200).json({
+        status: 'success',
+        results: advertisements.length,
+        data: { advertisements }
+    });
+});
+
 exports.deleteAdvertisement = factory.deleteOne(Advertisement);

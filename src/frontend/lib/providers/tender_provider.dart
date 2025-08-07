@@ -31,6 +31,23 @@ class TenderProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> fetchTendersBasedOnSellerCategory() async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      _tenders = await _tenderService.fetchTendersBasedOnCategory();
+      _error = null;
+    } catch (e) {
+      _tenders = [];
+      _error = e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
   Future<void> fetchTenderById(String id) async {
     _isLoading = true;
     _error = null;

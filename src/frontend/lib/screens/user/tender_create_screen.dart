@@ -1,278 +1,398 @@
-// import 'package:flutter/material.dart';
-// import 'package:frontend/models/tender_model.dart';
-// import 'package:frontend/widgets/custom_dropdown_field.dart';
-// import 'package:frontend/widgets/custom_text_input.dart';
+import 'package:flutter/material.dart';
+import 'package:frontend/models/tender_model.dart';
+import 'package:frontend/providers/seller_category_provider.dart';
+import 'package:frontend/providers/sub_category_provider.dart';
+import 'package:frontend/providers/tender_provider.dart';
+import 'package:frontend/providers/user_provider.dart';
+import 'package:frontend/widgets/custom_dropdown_field.dart';
+import 'package:frontend/widgets/custom_text_input.dart';
+import 'package:provider/provider.dart';
 
-// class TenderCreateScreen extends StatefulWidget {
-//   const TenderCreateScreen({Key? key}) : super(key: key);
+class TenderCreateScreen extends StatefulWidget {
+  const TenderCreateScreen({super.key});
 
-//   @override
-//   _TenderCreateScreenState createState() => _TenderCreateScreenState();
-// }
+  @override
+  State<TenderCreateScreen> createState() => _TenderCreateScreenState();
+}
 
-// class _TenderCreateScreenState extends State<TenderCreateScreen> {
-//   final _formKey = GlobalKey<FormState>();
-//   final _titleController = TextEditingController();
-//   final _descriptionController = TextEditingController();
-//   final _quantityController = TextEditingController();
-//   final _deliveryLocationController = TextEditingController();
+class _TenderCreateScreenState extends State<TenderCreateScreen> {
+  final _formKey = GlobalKey<FormState>();
+  bool _isLoading = false;
 
-//   bool _deliveryRequired = false;
-//   bool _isLoading = false;
+  String? _selectedSubCategory;
+  String? _selectedCategory;
+  final _titleController = TextEditingController();
+  final _descriptionController = TextEditingController();
+  final _quantityController = TextEditingController();
+  Units? _selectedUnit;
+  bool _deliveryRequired = false;
 
-//   // Sample data - replace with your actual data from API
-//   List<Map<String, dynamic>> _categories = [];
-//   List<Map<String, dynamic>> _subCategories = [];
-//   String? _selectedCategoryId;
-//   String? _selectedSubCategoryId;
-//   Units _selectedUnit = Units.kg;
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _descriptionController.dispose();
+    _quantityController.dispose();
+    super.dispose();
+  }
 
-//   @override
-//   void initState() {
-//     super.initState();
-//     _loadCategories();
-//   }
+  Future<void> _submitForm(TenderProvider tenderProvider) async {
+    setState(() => _isLoading = true);
+    try {
+      // Your submission logic here
+      await Future.delayed(const Duration(seconds: 2)); // Simulate network call
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Tender created successfully!'),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          backgroundColor: Theme.of(context).colorScheme.primary,
+        ),
+      );
+      _resetForm();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error creating tender: ${e.toString()}'),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
 
-//   Future<void> _loadCategories() async {
-//     setState(() => _isLoading = true);
-//     try {
-//       // Replace with your actual API calls
-//       final categories = await ApiService().getCategories();
-//       setState(() {
-//         _categories = categories;
-//         _isLoading = false;
-//       });
-//     } catch (e) {
-//       setState(() => _isLoading = false);
-//       ScaffoldMessenger.of(context).showSnackBar(
-//         SnackBar(content: Text('Failed to load categories: $e')),
-//       );
-//     }
-//   }
+  void _resetForm() {
+    _formKey.currentState?.reset();
+    _titleController.clear();
+    _descriptionController.clear();
+    _quantityController.clear();
+    setState(() {
+      _selectedSubCategory = null;
+      _selectedCategory = null;
+      _deliveryRequired = false;
+      _selectedUnit = null;
+    });
+  }
 
-//   Future<void> _loadSubCategories(String categoryId) async {
-//     setState(() => _isLoading = true);
-//     try {
-//       // Replace with your actual API call
-//       final subCategories = await ApiService().getSubCategories(categoryId);
-//       setState(() {
-//         _subCategories = subCategories;
-//         _selectedSubCategoryId = null;
-//         _isLoading = false;
-//       });
-//     } catch (e) {
-//       setState(() => _isLoading = false);
-//       ScaffoldMessenger.of(context).showSnackBar(
-//         SnackBar(content: Text('Failed to load sub-categories: $e')),
-//       );
-//     }
-//   }
+  Widget _buildSubCategoryDropdown(
+    String? categoryId,
+    SubCategoryProvider subCategoryProvider,
+  ) {
+    if (categoryId == null) {
+      return Container(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        child: Text(
+          'Please select a category first',
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+          ),
+        ),
+      );
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CustomDropdownField<String>(
+          labelText: "Sub Category",
+          hintText: "Select sub category",
+          value: _selectedSubCategory,
+          items: subCategoryProvider.subCategories
+              .map(
+                (subCategory) => DropdownMenuItem<String>(
+                  value: subCategory.id,
+                  child: Text(
+                    subCategory.name,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ),
+              )
+              .toList(),
+          onChanged: subCategoryProvider.isLoading || categoryId.isEmpty
+              ? null
+              : (value) => setState(() => _selectedSubCategory = value),
+          validator: (value) =>
+              value == null ? 'Please select a subcategory' : null,
+        ),
+        if (subCategoryProvider.isLoading)
+          const Padding(
+            padding: EdgeInsets.only(top: 8.0),
+            child: LinearProgressIndicator(),
+          ),
+        if (subCategoryProvider.errorMessage != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: Text(
+              subCategoryProvider.errorMessage!,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Theme.of(context).colorScheme.error,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
 
-//   Future<void> _submitTender() async {
-//     if (!_formKey.currentState!.validate()) return;
+  Widget _buildCategoryDropdown(SellerCategoryProvider categoryProvider) {
+    return CustomDropdownField<String>(
+      labelText: "Category",
+      hintText: "Select category",
+      value: _selectedCategory,
+      items: categoryProvider.sellerCategories
+          .map(
+            (category) => DropdownMenuItem<String>(
+              value: category.id,
+              child: Text(
+                category.name,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+            ),
+          )
+          .toList(),
+      onChanged: (value) {
+        setState(() {
+          _selectedCategory = value;
+          _selectedSubCategory = null;
+        });
+        if (value != null) {
+          Provider.of<SubCategoryProvider>(
+            context,
+            listen: false,
+          ).fetchSubCategoriesByCategory(value);
+        }
+      },
+      validator: (value) => value == null ? 'Please select a category' : null,
+    );
+  }
 
-//     setState(() => _isLoading = true);
+  Widget _buildNameField() {
+    return CustomTextInputField(
+      lableText: "Tender Name",
+      hintText: "Enter tender name",
+      keyBoardType: TextInputType.text,
+      controller: _titleController,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please enter a name';
+        }
+        if (value.length > 30) {
+          return 'Name cannot exceed 30 characters';
+        }
+        return null;
+      },
+    );
+  }
 
-//     try {
-//       final tenderData = {
-//         "title": _titleController.text,
-//         "description": _descriptionController.text,
-//         "category": _selectedCategoryId,
-//         "subCategory": _selectedSubCategoryId,
-//         "quantity": double.parse(_quantityController.text),
-//         "unit": unitsToString(_selectedUnit),
-//         "deliveryRequired": _deliveryRequired,
-//         if (_deliveryRequired && _deliveryLocationController.text.isNotEmpty)
-//           "deliveryLocation": _deliveryLocationController.text,
-//       };
+  Widget _buildDescriptionField() {
+    return CustomTextInputField(
+      controller: _descriptionController,
+      lableText: "Description",
+      hintText: "Enter tender description",
+      keyBoardType: TextInputType.multiline,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please enter a description';
+        }
+        if (value.length > 100) {
+          return 'Description cannot exceed 100 characters';
+        }
+        return null;
+      },
+    );
+  }
 
-//       // Replace with your actual API call
-//       await ApiService().createTender(tenderData);
+  Widget _buildQuantityAndUnitFields() {
+    return Row(
+      children: [
+        // Quantity field
+        Expanded(
+          flex: 2,
+          child: CustomTextInputField(
+            controller: _quantityController,
+            lableText: "Quantity",
+            keyBoardType: TextInputType.number,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter quantity';
+              }
+              final quantity = double.tryParse(value);
+              if (quantity == null) {
+                return 'Please enter a valid number';
+              }
+              if (quantity <= 0) {
+                return 'Quantity must be positive';
+              }
+              return null;
+            },
+          ),
+        ),
+        const SizedBox(width: 16),
 
-//       ScaffoldMessenger.of(context).showSnackBar(
-//         const SnackBar(content: Text('Tender created successfully!')),
-//       );
-//       Navigator.of(context).pop(true); // Return success
-//     } catch (e) {
-//       ScaffoldMessenger.of(context).showSnackBar(
-//         SnackBar(content: Text('Failed to create tender: $e')),
-//       );
-//     } finally {
-//       setState(() => _isLoading = false);
-//     }
-//   }
+        // Unit dropdown
+        Expanded(
+          flex: 1,
+          child: CustomDropdownField<Units>(
+            labelText: "Units",
+            hintText: "Select",
+            value: _selectedUnit,
+            items: Units.values
+                .map(
+                  (unit) => DropdownMenuItem<Units>(
+                    value: unit,
+                    child: Text(unitsToString(unit)),
+                  ),
+                )
+                .toList(),
+            onChanged: (value) => setState(() => _selectedUnit = value),
+            validator: (value) => value == null ? 'Please select a unit' : null,
+          ),
+        ),
+      ],
+    );
+  }
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text('Create New Tender'),
-//       ),
-//       body: _isLoading && _categories.isEmpty
-//           ? const Center(child: CircularProgressIndicator())
-//           : Form(
-//               key: _formKey,
-//               child: SingleChildScrollView(
-//                 padding: const EdgeInsets.all(16),
-//                 child: Column(
-//                   crossAxisAlignment: CrossAxisAlignment.start,
-//                   children: [
-//                     CustomTextInputField(
-//                       lableText: 'Title',
-//                       hintText: 'Enter tender title',
-//                       keyBoardType: TextInputType.text,
-//                       controller: _titleController,
-//                       validator: (value) {
-//                         if (value == null || value.isEmpty) {
-//                           return 'Please enter a title';
-//                         }
-//                         if (value.length > 100) {
-//                           return 'Title cannot exceed 100 characters';
-//                         }
-//                         return null;
-//                       },
-//                     ),
-//                     const SizedBox(height: 16),
-//                     CustomTextInputField(
-//                       lableText: 'Description',
-//                       keyBoardType: TextInputType.text,
-//                       hintText: 'Enter tender description',
-//                       controller: _descriptionController,
-//                       validator: (value) {
-//                         if (value == null || value.isEmpty) {
-//                           return 'Please enter a description';
-//                         }
-//                         if (value.length > 1000) {
-//                           return 'Description cannot exceed 1000 characters';
-//                         }
-//                         return null;
-//                       },
-//                     ),
-//                     const SizedBox(height: 16),
-//                     CustomDropdownField<String>(
-//                       labelText: 'Category',
-//                       value: _selectedCategoryId,
-//                       items: _categories
-//                           .map((category) => DropdownMenuItem<String>(
-//                                 value: category['_id'],
-//                                 child: Text(category['name']),
-//                               ))
-//                           .toList(),
-//                       onChanged: (value) {
-//                         setState(() {
-//                           _selectedCategoryId = value;
-//                           _selectedSubCategoryId = null;
-//                         });
-//                         if (value != null) {
-//                           _loadSubCategories(value);
-//                         }
-//                       },
-//                       validator: (value) {
-//                         if (value == null) {
-//                           return 'Please select a category';
-//                         }
-//                         return null;
-//                       },
-//                     ),
-//                     const SizedBox(height: 16),
-//                     CustomDropdownField<String>(
-//                       labelText: 'Subcategory (Optional)',
-//                       value: _selectedSubCategoryId,
-//                       items: _subCategories
-//                           .map((subCategory) => DropdownMenuItem<String>(
-//                                 value: subCategory['_id'],
-//                                 child: Text(subCategory['name']),
-//                               ))
-//                           .toList(),
-//                       onChanged: (value) {
-//                         setState(() {
-//                           _selectedSubCategoryId = value;
-//                         });
-//                       },
-//                     ),
-//                     const SizedBox(height: 16),
-//                     Row(
-//                       children: [
-//                         Expanded(
-//                           flex: 2,
-//                           child: CustomTextInputField(
-//                             lableText: 'Quantity',
-//                             hintText: 'Enter quantity',
-//                             controller: _quantityController,
-//                             keyBoardType: TextInputType.number,
-//                             validator: (value) {
-//                               if (value == null || value.isEmpty) {
-//                                 return 'Please enter quantity';
-//                               }
-//                               if (double.tryParse(value) == null) {
-//                                 return 'Please enter a valid number';
-//                               }
-//                               return null;
-//                             },
-//                           ),
-//                         ),
-//                         const SizedBox(width: 16),
-//                         Expanded(
-//                           flex: 1,
-//                           child: CustomDropdownField<Units>(
-//                             labelText: 'Unit',
-//                             value: _selectedUnit,
-//                             items: Units.values
-//                                 .map((unit) => DropdownMenuItem<Units>(
-//                                       value: unit,
-//                                       child: Text(unitsToString(unit)),
-//                                     ))
-//                                 .toList(),
-//                             onChanged: (value) {
-//                               if (value != null) {
-//                                 setState(() {
-//                                   _selectedUnit = value;
-//                                 });
-//                               }
-//                             },
-//                           ),
-//                         ),
-//                       ],
-//                     ),
-//                     const SizedBox(height: 16),
-//                     SwitchListTile(
-//                       title: const Text('Delivery Required'),
-//                       value: _deliveryRequired,
-//                       onChanged: (value) {
-//                         setState(() {
-//                           _deliveryRequired = value;
-//                         });
-//                       },
-//                     ),
-//                     const SizedBox(height: 32),
-//                     SizedBox(
-//                       width: double.infinity,
-//                       height: 50,
-//                       child: ElevatedButton(
-//                         onPressed: _isLoading ? null : _submitTender,
-//                         child: _isLoading
-//                             ? const CircularProgressIndicator(
-//                                 color: Colors.white,
-//                               )
-//                             : const Text(
-//                                 'Create Tender',
-//                                 style: TextStyle(fontSize: 16),
-//                               ),
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//             ),
-//     );
-//   }
+  Widget _buildDeliveryAvailableSwitch() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.local_shipping,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+          const SizedBox(width: 12),
+          Text(
+            'Want to deliver it?',
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
+          const Spacer(),
+          Switch(
+            activeColor: Theme.of(context).colorScheme.primary,
+            value: _deliveryRequired,
+            onChanged: (value) => setState(() => _deliveryRequired = value),
+          ),
+        ],
+      ),
+    );
+  }
 
-//   @override
-//   void dispose() {
-//     _titleController.dispose();
-//     _descriptionController.dispose();
-//     _quantityController.dispose();
-//     _deliveryLocationController.dispose();
-//     super.dispose();
-//   }
-// }
+  Widget _buildActionButtons() {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Theme.of(
+          context,
+        ).colorScheme.onSurface.withOpacity(0.2),
+      ),
+      onPressed: _isLoading
+          ? null
+          : () {
+              if (_formKey.currentState!.validate()) {
+                _submitForm(
+                  Provider.of<TenderProvider>(context, listen: false),
+                );
+              }
+            },
+      child: _isLoading
+          ? SizedBox(
+              height: 20,
+              width: 20,
+              child: CircularProgressIndicator(
+                color: Theme.of(context).colorScheme.onPrimary,
+                strokeWidth: 2,
+              ),
+            )
+          : Text(
+              'Create Tender',
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                color: Theme.of(context).colorScheme.onPrimary,
+              ),
+            ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer3<UserProvider, SellerCategoryProvider, SubCategoryProvider>(
+      builder:
+          (
+            context,
+            userProvider,
+            categoryProvider,
+            subCategoryProvider,
+            child,
+          ) {
+            if (categoryProvider.isLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            return Scaffold(
+              appBar: AppBar(
+                elevation: 0,
+                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                centerTitle: true,
+                title: Text(
+                  "Create New Tender",
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                leading: IconButton(
+                  icon: Icon(
+                    Icons.arrow_back,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ),
+              body: SingleChildScrollView(
+                padding: const EdgeInsets.all(24),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Tender Details",
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(
+                              color: Theme.of(context).colorScheme.onSurface,
+                              fontWeight: FontWeight.w600,
+                            ),
+                      ),
+                      const SizedBox(height: 24),
+                      _buildCategoryDropdown(categoryProvider),
+                      const SizedBox(height: 16),
+                      _buildSubCategoryDropdown(
+                        _selectedCategory,
+                        subCategoryProvider,
+                      ),
+                      const SizedBox(height: 16),
+                      _buildNameField(),
+                      const SizedBox(height: 16),
+                      _buildDescriptionField(),
+                      const SizedBox(height: 16),
+                      _buildQuantityAndUnitFields(),
+                      const SizedBox(height: 24),
+                      _buildDeliveryAvailableSwitch(),
+                      const SizedBox(height: 32),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [_buildActionButtons()],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+    );
+  }
+}
