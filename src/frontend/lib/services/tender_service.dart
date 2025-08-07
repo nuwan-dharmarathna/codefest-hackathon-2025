@@ -33,7 +33,9 @@ class TenderService {
 
       if (response.statusCode == 200) {
         log("Get All Tender API Call success");
+
         final Map<String, dynamic> responseBody = json.decode(response.body);
+        print('Extracted tender data: $responseBody');
 
         final List<dynamic> data = responseBody['data']['data'];
         return data.map((json) => TenderModel.fromJson(json)).toList();
@@ -91,14 +93,23 @@ class TenderService {
     }
   }
 
-  Future<TenderModel> createTender(TenderModel tender) async {
+  Future<Map<String, dynamic>> createTender(TenderModel tender) async {
     try {
+      log(
+        "category from provider -> ${tender.category}, SubCategory -> ${tender.subCategory} delivery -> ${tender.deliveryRequired}",
+      );
+
       final response = await http.post(
         Uri.parse(url),
         headers: await _getHeaders(),
+        body: jsonEncode(tender),
       );
+
+      log("Response -> ${response.body}");
+
       if (response.statusCode == 201) {
-        return TenderModel.fromJson(json.decode(response.body)['data']['data']);
+        log("Tender Created Suceess!");
+        return json.decode(response.body);
       } else {
         throw Exception('Failed to create tender');
       }

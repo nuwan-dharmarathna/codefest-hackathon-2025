@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:frontend/models/tender_model.dart';
 import 'package:frontend/services/tender_service.dart';
@@ -14,15 +16,24 @@ class TenderProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
 
-  Future<void> fetchTenders({Map<String, dynamic>? queryParams}) async {
+  Future<void> fetchTenders() async {
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
-      _tenders = await _tenderService.fetchAllTenders();
+      print('Starting to fetch tenders...');
+      final fetchedTenders = await _tenderService.fetchAllTenders();
+      print('Successfully fetched ${fetchedTenders.length} tenders');
+
+      _tenders = fetchedTenders;
       _error = null;
+
+      if (_tenders.isEmpty) {
+        print('Note: Tenders list is empty after fetch');
+      }
     } catch (e) {
+      print('Error in fetchTenders: $e');
       _tenders = [];
       _error = e.toString();
     } finally {
@@ -65,17 +76,34 @@ class TenderProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> createTender(TenderModel tender) async {
+  Future<Map<String, dynamic>> createTender(TenderModel tender) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
       final newTender = await _tenderService.createTender(tender);
-      _tenders.insert(0, newTender);
-      _error = null;
+
+      if (newTender['status'] == 'success') {
+        return newTender;
+      }
+      return {
+        'status': 'failed',
+        'error':
+            newTender['error'] ??
+            {
+              'statusCode': 400,
+              'message': newTender['message'] ?? 'Registration failed',
+            },
+        'message': newTender['message'] ?? 'Registration failed',
+      };
     } catch (e) {
       _error = e.toString();
+      return {
+        'status': 'failed',
+        'error': {'statusCode': 500, 'message': 'Network error'},
+        'message': 'Failed to connect to server',
+      };
     } finally {
       _isLoading = false;
       notifyListeners();

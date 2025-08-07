@@ -42,67 +42,71 @@ Units unitsFromString(String unit) {
 }
 
 class TenderModel {
-  final String id;
-  final String createdBy;
-  final UserRole role;
+  String? id;
+  String? createdBy;
+  UserRole? role;
   final String title;
   final String description;
   final String category;
-  final String? subCategory;
+  final String subCategory;
   final double quantity;
   final Units unit;
   final bool deliveryRequired;
-  final String? deliveryLocation;
-  final bool isClosed;
-  final String? acceptedBid;
-  final DateTime createdAt;
-  final DateTime? updatedAt;
+  String? deliveryLocation;
+  bool? isClosed;
+  String? acceptedBid;
+  DateTime? createdAt;
+  DateTime? updatedAt;
 
   TenderModel({
-    required this.id,
-    required this.createdBy,
-    required this.role,
+    this.id,
+    this.createdBy,
+    this.role,
     required this.title,
     required this.description,
     required this.category,
-    this.subCategory,
+    required this.subCategory,
     required this.quantity,
     required this.unit,
     required this.deliveryRequired,
     this.deliveryLocation,
-    required this.isClosed,
+    this.isClosed,
     this.acceptedBid,
-    required this.createdAt,
+    this.createdAt,
     this.updatedAt,
   });
 
   factory TenderModel.fromJson(Map<String, dynamic> json) {
-    return TenderModel(
-      id: json['_id'],
-      createdBy: json['createdBy'],
-      role: userRoleFromString(json['role']),
-      title: json['title'],
-      description: json['description'],
-      category: json['category'],
-      subCategory: json['subCategory'],
-      quantity: json['quantity']?.toDouble() ?? 0.0,
-      unit: unitsFromString(json['unit']),
-      deliveryRequired: json['deliveryRequired'] ?? false,
-      deliveryLocation: json['deliveryLocation'],
-      isClosed: json['isClosed'] ?? false,
-      acceptedBid: json['acceptedBid'],
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: json['updatedAt'] != null
-          ? DateTime.parse(json['updatedAt'])
-          : null,
-    );
+    try {
+      print('Parsing tender: ${json['_id']}');
+
+      return TenderModel(
+        id: json['_id'] as String,
+        createdBy: json['createdBy'] as String,
+        role: userRoleFromString(json['role'] as String),
+        title: json['title'] as String,
+        description: json['description'] as String,
+        category: json['category'], // Can be Map or String
+        subCategory: json['subCategory'], // Can be Map or String
+        quantity: (json['quantity'] as num).toDouble(),
+        unit: unitsFromString(json['unit'] as String),
+        deliveryRequired: json['deliveryRequired'] as bool? ?? false,
+        isClosed: json['isClosed'] as bool? ?? false,
+        acceptedBid: json['acceptedBid'] as String?,
+        createdAt: DateTime.parse(json['createdAt'] as String),
+        updatedAt: json['updatedAt'] != null
+            ? DateTime.parse(json['updatedAt'] as String)
+            : null,
+      );
+    } catch (e) {
+      print('Error parsing tender JSON: $e');
+      print('Problematic JSON: $json');
+      rethrow;
+    }
   }
 
   Map<String, dynamic> toJson() {
     return {
-      '_id': id,
-      'createdBy': createdBy,
-      'role': userRoletoString(role),
       'title': title,
       'description': description,
       'category': category,
@@ -110,11 +114,6 @@ class TenderModel {
       'quantity': quantity,
       'unit': unitsToString(unit),
       'deliveryRequired': deliveryRequired,
-      'deliveryLocation': deliveryLocation,
-      'isClosed': isClosed,
-      'acceptedBid': acceptedBid,
-      'createdAt': createdAt.toIso8601String(),
-      'updatedAt': updatedAt?.toIso8601String(),
     };
   }
 

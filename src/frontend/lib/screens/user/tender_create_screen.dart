@@ -1,9 +1,13 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:frontend/models/sub_category_model.dart';
 import 'package:frontend/models/tender_model.dart';
 import 'package:frontend/providers/seller_category_provider.dart';
 import 'package:frontend/providers/sub_category_provider.dart';
 import 'package:frontend/providers/tender_provider.dart';
 import 'package:frontend/providers/user_provider.dart';
+import 'package:frontend/widgets/custom_alert_box.dart';
 import 'package:frontend/widgets/custom_dropdown_field.dart';
 import 'package:frontend/widgets/custom_text_input.dart';
 import 'package:provider/provider.dart';
@@ -35,31 +39,93 @@ class _TenderCreateScreenState extends State<TenderCreateScreen> {
     super.dispose();
   }
 
-  Future<void> _submitForm(TenderProvider tenderProvider) async {
-    setState(() => _isLoading = true);
+  Future<void> _submitForm(UserProvider userProvider) async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    // Show loading dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
+    );
+
     try {
-      // Your submission logic here
-      await Future.delayed(const Duration(seconds: 2)); // Simulate network call
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Tender created successfully!'),
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+      // 2. Create advertisement object
+      final tender = TenderModel(
+        title: _titleController.text.trim(),
+        description: _descriptionController.text.trim(),
+        category: _selectedCategory!,
+        subCategory: _selectedSubCategory!,
+        quantity: double.parse(_quantityController.text),
+        unit: unitsFromString(_selectedUnit!.name),
+        deliveryRequired: _deliveryRequired,
+      );
+
+      // 3. Save advertisement
+      final response = await Provider.of<TenderProvider>(
+        context,
+        listen: false,
+      ).createTender(tender);
+
+      // Close loading dialog
+      if (mounted) Navigator.of(context).pop();
+
+      // Check the response status
+      if (response['status'] == 'success') {
+        // Show success dialog
+        await showDialog(
+          context: context,
+          builder: (context) => CustomAlertBox(
+            title: 'Success',
+            message: 'Advertisement created successfully!',
+            icon: Icons.check_circle,
+            titleColor: Colors.green,
           ),
-          backgroundColor: Theme.of(context).colorScheme.primary,
-        ),
-      );
-      _resetForm();
+        );
+
+        // Reset the form instead of navigating away
+        if (mounted) {
+          _resetForm();
+        }
+      } else {
+        // Show error from the response
+        final errorMessage = response['message'] ?? 'Failed to create tender';
+        showDialog(
+          context: context,
+          builder: (context) => CustomAlertBox(
+            title: 'Error',
+            message: errorMessage,
+            icon: Icons.error,
+            titleColor: Colors.red,
+          ),
+        );
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error creating tender: ${e.toString()}'),
-          backgroundColor: Theme.of(context).colorScheme.error,
-        ),
-      );
+      // Close loading dialog if still open
+      if (mounted) Navigator.of(context).pop();
+
+      // Show error dialog
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (context) => CustomAlertBox(
+            title: 'Error',
+            message: 'Failed to create advertisement: ${e.toString()}',
+            icon: Icons.error,
+            titleColor: Colors.red,
+          ),
+        );
+      }
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -83,53 +149,47 @@ class _TenderCreateScreenState extends State<TenderCreateScreen> {
     if (categoryId == null) {
       return Container(
         padding: const EdgeInsets.symmetric(vertical: 16),
-        child: Text(
-          'Please select a category first',
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-          ),
-        ),
+        child: Text('Please select a category first'),
       );
     }
+
+    // Filter items to ensure no duplicates and match selected value
+    final subCategoryItems = subCategoryProvider.subCategories
+        .fold<Map<String, SubCategoryModel>>({}, (map, item) {
+          map[item.id] = item; // This ensures unique IDs
+          return map;
+        })
+        .values
+        .map(
+          (subCategory) => DropdownMenuItem<String>(
+            value: subCategory.id,
+            child: Text(subCategory.name),
+          ),
+        )
+        .toList();
+
+    // Reset selection if current value doesn't exist in new items
+    if (_selectedSubCategory != null &&
+        !subCategoryProvider.subCategories.any(
+          (x) => x.id == _selectedSubCategory,
+        )) {
+      _selectedSubCategory = null;
+    }
+
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         CustomDropdownField<String>(
           labelText: "Sub Category",
           hintText: "Select sub category",
           value: _selectedSubCategory,
-          items: subCategoryProvider.subCategories
-              .map(
-                (subCategory) => DropdownMenuItem<String>(
-                  value: subCategory.id,
-                  child: Text(
-                    subCategory.name,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                ),
-              )
-              .toList(),
+          items: subCategoryItems,
           onChanged: subCategoryProvider.isLoading || categoryId.isEmpty
               ? null
               : (value) => setState(() => _selectedSubCategory = value),
           validator: (value) =>
               value == null ? 'Please select a subcategory' : null,
         ),
-        if (subCategoryProvider.isLoading)
-          const Padding(
-            padding: EdgeInsets.only(top: 8.0),
-            child: LinearProgressIndicator(),
-          ),
-        if (subCategoryProvider.errorMessage != null)
-          Padding(
-            padding: const EdgeInsets.only(top: 8.0),
-            child: Text(
-              subCategoryProvider.errorMessage!,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.error,
-              ),
-            ),
-          ),
+        // ... rest of your existing code ...
       ],
     );
   }
@@ -283,7 +343,7 @@ class _TenderCreateScreenState extends State<TenderCreateScreen> {
     );
   }
 
-  Widget _buildActionButtons() {
+  Widget _buildActionButtons(UserProvider provider) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         backgroundColor: Theme.of(
@@ -294,9 +354,7 @@ class _TenderCreateScreenState extends State<TenderCreateScreen> {
           ? null
           : () {
               if (_formKey.currentState!.validate()) {
-                _submitForm(
-                  Provider.of<TenderProvider>(context, listen: false),
-                );
+                _submitForm(provider);
               }
             },
       child: _isLoading
@@ -385,7 +443,7 @@ class _TenderCreateScreenState extends State<TenderCreateScreen> {
                       const SizedBox(height: 32),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: [_buildActionButtons()],
+                        children: [_buildActionButtons(userProvider)],
                       ),
                     ],
                   ),
