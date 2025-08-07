@@ -58,7 +58,7 @@ exports.createPurchaseRequest = catchAsync(async(req, res, next)=>{
         recipient : advertisement.seller,
         sender : req.user._id,
         type: 'purchase_request',
-        relatedEntity: purchase._id,
+        relatedEntity: purchaseRequest._id,
         relatedEntityModel: 'PurchaseRequest',
         message: `New purchase request for your product: ${advertisement.name}`
     });
@@ -96,11 +96,22 @@ exports.getRequestsForAdvertisement = catchAsync(async(req, res, next)=>{
     });
 });
 
-exports.getRequestsBasedOnUser = catchAsync(async(req, res, next)=>{
+exports.getRequestsBasedOnSeller = catchAsync(async(req, res, next)=>{
     const user = req.user;
 
-    // Fetch purchase requests
-    const requests = await PurchaseRequest.find({buyer: user._id}).sort({createdAt : -1});
+    const requests = await PurchaseRequest.aggregate([
+        {
+            $lookup: {
+            from: 'advertisements',
+            localField: 'advertisement',
+            foreignField: '_id',
+            as: 'advertisement'
+            }
+        },
+        { $unwind: '$advertisement' },
+        { $match: { 'advertisement.seller': user._id } },
+        { $sort: { createdAt: -1 } }
+    ]);
 
     res.status(201).json({
         status: 'success',

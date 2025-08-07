@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/providers/advertisement_provider.dart';
 import 'package:frontend/providers/seller_category_provider.dart';
 import 'package:frontend/providers/user_provider.dart';
-import 'package:frontend/screens/user/buyer/advertisement_details_screen.dart';
+import 'package:frontend/screens/user/advertisement_details_screen.dart';
 import 'package:frontend/widgets/category_selector.dart';
 import 'package:frontend/widgets/custom_advertisement_card.dart';
 import 'package:provider/provider.dart';

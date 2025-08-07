@@ -127,7 +127,6 @@ class AdvertisementService {
     AdvertisementModel advertisement,
   ) async {
     try {
-      log("Headers: $_getHeaders()");
       final response = await http.post(
         Uri.parse(url),
         headers: await _getHeaders(),
@@ -154,6 +153,30 @@ class AdvertisementService {
 
     if (response.statusCode != 204) {
       throw Exception('Failed to delete Advertisement');
+    }
+  }
+
+  Future<Map<String, dynamic>> createPurchaseRequest(
+    Map<String, dynamic> req,
+  ) async {
+    try {
+      final response = await http.post(
+        Uri.parse("$baseURL/purchases"),
+        headers: await _getHeaders(),
+        body: jsonEncode(req),
+      );
+
+      log("Response : ${response.body}");
+
+      if (response.statusCode == 201) {
+        log("Purchase Request Created Suceess!");
+        return json.decode(response.body);
+      } else {
+        throw Exception('Failed to create Purchase Request');
+      }
+    } catch (e) {
+      log("Error creating Advertisement : $e");
+      throw Exception('Failed to create Advertisement : $e');
     }
   }
 }

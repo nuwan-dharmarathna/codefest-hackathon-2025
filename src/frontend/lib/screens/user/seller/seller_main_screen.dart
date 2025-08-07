@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/screens/user/seller/create_advertisement_screen.dart';
+import 'package:frontend/screens/user/seller/purchase_request_screen.dart';
 import 'package:frontend/screens/user/seller/seller_home_screen.dart';
 import 'package:frontend/screens/user/user_profile_screen.dart';
 import 'package:frontend/screens/user/user_tenders_screen.dart';
@@ -18,6 +19,7 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
     SellerHomeScreen(),
     UserTendersScreen(),
     CreateAdvertisementScreen(),
+    PurchaseRequestScreen(),
     UserProfileScreen(),
   ];
 
@@ -101,7 +103,7 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
               ),
               BottomNavigationBarItem(
                 icon: Image.asset(
-                  "assets/icons/heart.png",
+                  "assets/icons/order.png",
                   color: _selectedIndex == 3
                       ? Theme.of(context).colorScheme.primary
                       : Theme.of(context).brightness == Brightness.light
@@ -109,7 +111,7 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
                       : Colors.white54,
                   width: MediaQuery.of(context).size.width * 0.06,
                 ),
-                label: "Favourites",
+                label: "Requests",
               ),
               BottomNavigationBarItem(
                 icon: Image.asset(

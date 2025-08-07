@@ -41,6 +41,7 @@ flutter:
     - assets/icons/heart.png
     - assets/icons/user.png
     - assets/icons/add.png
+    - assets/icons/order.png
     - assets/images/logo_dark.png
     - assets/images/logo_light.png
     - assets/images/women_hands.jpeg

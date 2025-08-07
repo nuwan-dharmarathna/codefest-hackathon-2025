@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/advertisement_model.dart';
+import 'package:frontend/services/advertisement_service.dart';
+import 'package:frontend/widgets/custom_alert_box.dart';
 import 'package:frontend/widgets/custom_submit_button.dart';
 
 class OrderPlacementDialog extends StatefulWidget {
@@ -160,10 +162,56 @@ class _OrderPlacementDialogState extends State<OrderPlacementDialog> {
     setState(() => _isLoading = true);
 
     try {
-      await widget.onPlaceOrder(_quantity, _wantDelivery);
-      if (mounted) Navigator.pop(context);
+      final AdvertisementService advertisementService = AdvertisementService();
+      final response = await advertisementService.createPurchaseRequest({
+        "advertisementId": widget.ad.id,
+        "quantity": _quantity,
+        "wantToImport": _wantDelivery,
+      });
+
+      if (mounted) {
+        Navigator.pop(context); // Close the dialog
+
+        // Show success/error based on response
+        if (response['status'] == "success") {
+          _showSuccessAlert(context);
+        } else {
+          _showErrorAlert(
+            context,
+            response['status'] ?? 'Failed to place order',
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        Navigator.pop(context); // Close the dialog
+        _showErrorAlert(context, 'An error occurred: ${e.toString()}');
+      }
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  void _showSuccessAlert(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => CustomAlertBox(
+        title: 'Order Placed Successfully!',
+        message: "Your has been successfully created!",
+        icon: Icons.check_circle,
+        titleColor: Colors.green,
+      ),
+    );
+  }
+
+  void _showErrorAlert(BuildContext context, String errorMessage) {
+    showDialog(
+      context: context,
+      builder: (context) => CustomAlertBox(
+        title: 'Order Failed',
+        message: errorMessage,
+        icon: Icons.error,
+      ),
+    );
   }
 }

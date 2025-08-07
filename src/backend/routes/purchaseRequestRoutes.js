@@ -9,7 +9,7 @@ router.use(authController.protect);
 
 router.route('/').post(purchaseRequestController.createPurchaseRequest);
 router.route('/advertisement/:id').get(purchaseRequestController.getRequestsForAdvertisement); // wrong path
-router.route('/user').get(purchaseRequestController.getRequestsBasedOnUser);
+router.route('/user').get(purchaseRequestController.getRequestsBasedOnSeller);
 router
 .route('/:id')
 .get(purchaseRequestController.getPurchaseRequest)
