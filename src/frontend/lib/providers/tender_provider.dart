@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:frontend/models/tender_model.dart';
 import 'package:frontend/services/tender_service.dart';

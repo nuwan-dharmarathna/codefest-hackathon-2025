@@ -51,7 +51,16 @@ class _UserTendersScreenState extends State<UserTendersScreen> {
     final tenderProvider = context.watch<TenderProvider>();
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Tenders")),
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        title: Text(
+          "Tenders",
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            color: Theme.of(context).colorScheme.onSurface,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
       body: Column(
         children: [
           // Show category selector only for buyers
