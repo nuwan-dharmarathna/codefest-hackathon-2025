@@ -1,8 +1,8 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "SLUDI Marketplace API",
-    "description": "API documentation for SLUDI Marketplace backend, covering buyer, seller, and admin endpoints.",
+    "title": "GoviChain API",
+    "description": "API documentation for the GoviChain marketplace platform",
     "version": "1.0.0"
   },
   "servers": [

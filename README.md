@@ -1,61 +1,84 @@
-# 🌾 GoviChain
+# 🌾 GoviChain - Direct Agricultural Marketplace
 
-GoviChain is a **role-based digital marketplace** designed to connect **farmers, small/medium entrepreneurs, and buyers** directly — without unnecessary intermediaries.  
-This platform enables sellers to list products with **quantity-based pricing tiers** and buyers to **post tenders**, allowing sellers to bid with competitive prices.  
-The result: **fair trade, transparency, and better profits for producers**, while buyers get fresh, quality products at fair rates.
+GoviChain is a **role-based digital marketplace** that directly connects farmers, small/medium entrepreneurs, and buyers—eliminating unnecessary intermediaries. Our platform ensures fair trade, transparency, and better profits for producers while providing buyers with fresh, quality products at competitive rates.
 
----
+## 🚀 Key Features
 
-## 🚀 Features
-- **Role-based system** — Buyers and Sellers get tailored dashboards.
-- **Sellers** can:
-  - List products with **quantity range pricing** (e.g., 1–3kg @ Rs. 110/kg, 4–10kg @ Rs. 90/kg, etc.)
-  - Receive **tender notifications** from relevant categories.
-  - Accept or reject purchase requests.
-- **Buyers** can:
-  - Browse products by category/subcategory.
-  - Post tenders for specific product quantities.
-  - Accept bids from sellers.
-- **Real-time Notifications** for tenders, bids, and purchase request updates.
-- **SLUDI, NDX, PayDPI** integration placeholders with mock validation flows for competition purposes.
+### 👩‍🌾 Seller Features
+- **Tailored seller dashboard**
+- **Quantity-based pricing tiers** (e.g., 1-3kg @ Rs. 110/kg, 4-10kg @ Rs. 90/kg)
+- **Tender notification system** for relevant product categories
+- **Bid management** for buyer tenders
+- **Purchase request handling** (accept/reject)
 
----
+### 🛒 Buyer Features
+- **Custom buyer dashboard**
+- **Product browsing** by category/subcategory
+- **Tender creation** for specific product quantities
+- **Bid evaluation and acceptance**
+- **Price comparison tools**
 
-## 📜 Important Note on SLUDI, NDX & PayDPI Integration
-The competition **did not provide proper sandbox endpoints** for these services.  
-To ensure functional flows in the prototype, we assumed **mock validation logic**:
+### 🔔 Platform Features
+- **Real-time notifications** for tenders, bids, and purchases
+- **Mock integrations** for SLUDI, NDX, and PayDPI (for competition purposes)
+- **Role-based access control**
+- **Transparent pricing system**
 
-### **SLUDI Validation**
-- SLUDI number **must start with `SL`**
-- Followed by **exactly 6 digits**
-- Example: `SL123456` ✅
+## 📋 Important Note: Service Integrations
+*For competition purposes only* - The following mock validations are implemented pending official endpoints:
 
-### **NDX Validation**
-- Fetch **control prices** of products from NDX (mocked) and compare with sellers’ advertised prices.
-- Fetch **mock delivery prices** for several districts/provinces to simulate delivery cost checks.
+### SLUDI Validation
+- Format: `SL` followed by exactly 6 digits
+- Example: `SL123456` (valid)
 
-### **PayDPI**
-- Pending official endpoints from organizers.
-- Payment flows are **currently simulated** for the prototype.
+### NDX Integration
+- Mocked control price comparisons
+- Simulated delivery cost calculations by region
 
-> These assumptions are for **demo & evaluation purposes only** and will be replaced with real integrations when endpoints are provided.
+### PayDPI
+- Payment flow simulation (not implemented in backend)
+- Will be replaced with real integration when available
 
----
+## 🛠 Technology Stack
+| Component        | Technology                          |
+|------------------|-------------------------------------|
+| Frontend         | Flutter (Cross-platform)            |
+| Backend          | Node.js (Express + MongoDB)         |
+| Authentication  | JWT-based secure access             |
+| Deployment       | Docker containers                   |
+| API Docs         | Swagger UI                          |
 
-## 🛠 Tech Stack
-- **Frontend**: Flutter
-- **Backend**: Node.js (Express, MongoDB)
-- **Authentication**: JWT-based
-- **Deployment-ready**: Docker
+## 🚀 Getting Started
+### Prerequisites
+- Docker (for backend)
+- Flutter SDK (for frontend)
+- Git
 
----
-
-## ⚙️ Setup Instructions
-
-### **1. Backend Setup**
-No manual code setup needed — just pull the public Docker image and run:
+### Backend Setup
 ```bash
 docker pull nuwandharmarathna/govichain-backend:v1.0.0
+docker run -p 8086:8086 nuwandharmarathna/govichain-backend:v1.0.0
+```
+
+### 2. Frontend Setup
+# Clone the repository
+```
+git clone https://github.com/<your-username>/govichain.git
+cd govichain-frontend
+```
+
+# Configure your local IP
+utils/constants.dart
+
+# Install dependencies
+```
+flutter clean
+flutter pub get
+```
+
+# Select a target device (emulator or real device)
+```
+flutter run
 ```
 
 ## 📖 API Documentation
@@ -69,29 +92,6 @@ Swagger UI provides an interactive interface to explore all endpoints, request/r
 
 > **Note:** Make sure your backend server is running before accessing Swagger UI.
 
-
-
-### **2. Frontend Setup **
-# Clone the repository
-```
-git clone https://github.com/<your-username>/govichain.git
-cd govichain-frontend
-```
-
-# Update your local IP address in:
-utils/constants.dart
-
-# Clean and fetch dependencies
-```
-flutter clean
-flutter pub get
-```
-
-# Select a target device (emulator or real device)
-```
-flutter run
-```
-
 ## 🧑‍🤝‍🧑 Who Can Use GoviChain?
 
 GoviChain is designed for both men and women, covering:
@@ -103,7 +103,7 @@ GoviChain is designed for both men and women, covering:
 - **Agricultural suppliers**
 - **And any other seller who wants to reach buyers directly**
 
-## 👨‍💻 Developer
+## 📞 Contact
 
-Nuwan Dharmarathna
-nuwandharmarathna20@gmail.com
+**Developer:** Nuwan Dharmarathna  
+**Email:** [nuwandharmarathna20@gmail.com](mailto:nuwandharmarathna20@gmail.com)
