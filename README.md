@@ -2,6 +2,8 @@
 
 GoviChain is a **role-based digital marketplace** that directly connects farmers, small/medium entrepreneurs, and buyers—eliminating unnecessary intermediaries. Our platform ensures fair trade, transparency, and better profits for producers while providing buyers with fresh, quality products at competitive rates.
 
+![Demo GIF](short_gif.gif)
+
 ## 🚀 Key Features
 
 ### 👩‍🌾 Seller Features

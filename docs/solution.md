@@ -115,19 +115,6 @@ In addition to browsing seller listings, GoviChain allows buyers to post custom 
 3. Get notified if selected
 4. Fulfill the order as usual
 
-### 🧠 API Endpoints for Buyer Request Flow:
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/requests` | POST | Buyer creates a product request |
-| `/api/requests` | GET | Seller views buyer requests |
-| `/api/requests/:id/offer` | POST | Seller submits price offer |
-| `/api/offers/:id` | GET | Buyer views all offers |
-| `/api/offers/:id/status` | PATCH | Buyer accepts an offer |
-
-This system allows other buyers to **browse past offers** and **contact new sellers**, growing the network of trusted sellers in the ecosystem.
-
----
-
 ## 🛡️ Security & Consent
 
 - All users authenticated via SLUDI (OAuth 2.0)
