@@ -56,15 +56,15 @@ GoviChain is a **role-based digital marketplace** that directly connects farmers
 
 ### Backend Setup
 ```bash
-docker pull nuwandharmarathna/govichain-backend:v1.0.0
-docker run -p 8086:8086 nuwandharmarathna/govichain-backend:v1.0.0
+docker pull nuwandharmarathna/govichain-backend:v1.0.1
+docker run -p 8086:8086 nuwandharmarathna/govichain-backend:v1.0.1
 ```
 
 ### 2. Frontend Setup
 # Clone the repository
 ```
-git clone https://github.com/<your-username>/govichain.git
-cd govichain-frontend
+git clone https://github.com/nuwan-dharmarathna/codefest-hackathon-2025.git
+cd codefest-hackathon-2025/src/frontend
 ```
 
 # Configure your local IP
@@ -102,6 +102,13 @@ GoviChain is designed for both men and women, covering:
 - **Craft product makers**
 - **Agricultural suppliers**
 - **And any other seller who wants to reach buyers directly**
+
+## 📦 Development Status
+
+- **Backend:** ✅ 100% complete and fully functional, including authentication, category management, tender system, purchase requests, notifications, and AI Middleman Detection Agent.
+- **Frontend:** 🚧 Major features implemented (authentication, product listings, tenders, purchase requests).  
+  The remaining features can be completed and integrated quickly to achieve a fully operational frontend.
+
 
 ## 📞 Contact
 
