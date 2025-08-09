@@ -1,14 +1,14 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "GoviChain API",
-    "description": "API documentation for the GoviChain marketplace platform",
+    "title": "SLUDI Marketplace API",
+    "description": "API documentation for SLUDI Marketplace backend, covering buyer, seller, and admin endpoints.",
     "version": "1.0.0"
   },
   "servers": [
     {
       "url": "https://127.0.0.1:8086/api/v1",
-      "description": "Local development server"
+      "description": "Development server"
     }
   ],
   "components": {
@@ -17,59 +17,47 @@
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "JWT"
+      },
+      "cookieAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "jwt"
       }
     },
     "schemas": {
       "User": {
         "type": "object",
         "properties": {
-          "id": {
-            "type": "string",
-            "example": "64b8f17a2f5b4c001f9e0001"
-          },
           "firstName": {
-            "type": "string",
-            "example": "Nuwan"
+            "type": "string"
           },
           "lastName": {
-            "type": "string",
-            "example": "Perera"
+            "type": "string"
           },
           "phone": {
-            "type": "string",
-            "example": "0712345678"
+            "type": "string"
           },
           "email": {
-            "type": "string",
-            "example": "nuwan@example.com"
+            "type": "string"
           },
           "sludiNo": {
-            "type": "string",
-            "example": "123456789012"
+            "type": "string"
           },
           "nic": {
-            "type": "string",
-            "example": "200112345678"
+            "type": "string"
           },
           "location": {
-            "type": "string",
-            "example": "Kurunegala"
+            "type": "string"
           },
           "role": {
             "type": "string",
             "enum": [
               "buyer",
               "seller"
-            ],
-            "example": "seller"
+            ]
           },
-          "isActivated": {
-            "type": "boolean",
-            "example": true
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
+          "image": {
+            "type": "string"
           }
         }
       },
@@ -77,57 +65,223 @@
         "type": "object",
         "properties": {
           "name": {
-            "type": "string",
-            "example": "Agriculture & Farming"
+            "type": "string"
           },
           "slug": {
-            "type": "string",
-            "example": "farmer"
+            "type": "string"
           },
           "nameOnBuyerSide": {
-            "type": "string",
-            "example": "Agricultural"
+            "type": "string"
           },
           "imageOnSellerSide": {
-            "type": "string",
-            "example": "agriculture.png"
+            "type": "string"
           },
           "imageOnBuyerSide": {
-            "type": "string",
-            "example": "agri.png"
+            "type": "string"
           },
           "description": {
-            "type": "string",
-            "example": "Fruits, vegetables, grains and crops"
+            "type": "string"
+          }
+        }
+      },
+      "SubCategory": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          }
+        }
+      },
+      "Advertisement": {
+        "type": "object",
+        "properties": {
+          "seller": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "subCategory": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "unit": {
+            "type": "string"
+          },
+          "deliveryAvailable": {
+            "type": "boolean"
+          },
+          "deliveryRadius": {
+            "type": "number"
+          },
+          "location": {
+            "type": "string"
+          },
+          "priceTiers": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Tender": {
+        "type": "object",
+        "properties": {
+          "createdBy": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "subCategory": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "unit": {
+            "type": "string"
+          },
+          "deliveryRequired": {
+            "type": "boolean"
+          },
+          "deliveryLocation": {
+            "type": "string"
+          },
+          "isClosed": {
+            "type": "boolean"
+          },
+          "acceptedBid": {
+            "type": "string"
+          }
+        }
+      },
+      "Bid": {
+        "type": "object",
+        "properties": {
+          "tender": {
+            "type": "string"
+          },
+          "user": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "unit": {
+            "type": "string"
+          },
+          "pickupLocation": {
+            "type": "string"
+          },
+          "deliveryAvailable": {
+            "type": "boolean"
+          },
+          "deliveryRadius": {
+            "type": "number"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "isAccepted": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PurchaseRequest": {
+        "type": "object",
+        "properties": {
+          "advertisement": {
+            "type": "string"
+          },
+          "buyer": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "unit": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "rejectionStatus": {
+            "type": "string"
+          },
+          "pricePerUnit": {
+            "type": "number"
+          },
+          "totalPrice": {
+            "type": "number"
+          },
+          "wantToImportThem": {
+            "type": "boolean"
+          },
+          "deliveryLocation": {
+            "type": "string"
           }
         }
       },
       "Notification": {
         "type": "object",
         "properties": {
-          "id": {
-            "type": "string",
-            "example": "64b8f17a2f5b4c001f9e1002"
+          "recipient": {
+            "type": "string"
           },
-          "userId": {
-            "type": "string",
-            "example": "64b8f17a2f5b4c001f9e0001"
+          "sender": {
+            "type": "string"
           },
-          "title": {
-            "type": "string",
-            "example": "Tender Accepted"
+          "type": {
+            "type": "string"
+          },
+          "relatedEntity": {
+            "type": "string"
+          },
+          "relatedEntityModel": {
+            "type": "string"
           },
           "message": {
-            "type": "string",
-            "example": "Your bid on Tender #123 has been accepted."
+            "type": "string"
           },
           "isRead": {
-            "type": "boolean",
-            "example": false
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
+            "type": "boolean"
           }
         }
       }
@@ -136,10 +290,36 @@
   "security": [
     {
       "bearerAuth": []
+    },
+    {
+      "cookieAuth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Auth"
+    },
+    {
+      "name": "Seller Categories"
+    },
+    {
+      "name": "Sub Categories"
+    },
+    {
+      "name": "Advertisements"
+    },
+    {
+      "name": "Tenders"
+    },
+    {
+      "name": "Purchase Requests"
+    },
+    {
+      "name": "Notifications"
     }
   ],
   "paths": {
-    "/auth/signup": {
+    "/auth/signUp": {
       "post": {
         "tags": [
           "Auth"
@@ -151,87 +331,1022 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/User"
-              },
-              "example": {
-                "firstName": "Nuwan",
-                "lastName": "Perera",
-                "phone": "0712345678",
-                "email": "nuwan@example.com",
-                "sludiNo": "123456789012",
-                "nic": "200112345678",
-                "location": "Kurunegala",
-                "password": "testpass123",
-                "passwordConfirm": "testpass123",
-                "role": "seller",
-                "category": "64b7e934dfd3290ee4f30ef1",
-                "businessName": "Nuwan Farm Products"
               }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "User registered successfully",
-            "content": {
-              "application/json": {
-                "example": {
-                  "status": "success",
-                  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI...",
-                  "data": {
-                    "user": {
-                      "id": "64b8f17a2f5b4c001f9e0001",
-                      "firstName": "Nuwan",
-                      "lastName": "Perera",
-                      "role": "seller"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request"
+            "description": "User registered successfully"
           }
         }
       }
     },
-    "/notifications/{userId}": {
+    "/auth/signIn": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Login user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User logged in successfully"
+          }
+        }
+      }
+    },
+    "/auth/me": {
       "get": {
         "tags": [
-          "Notifications"
+          "Auth"
         ],
-        "summary": "Get all notifications for a user",
-        "parameters": [
+        "summary": "Get current logged in user",
+        "security": [
           {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "ID of the user"
+            "bearerAuth": []
+          },
+          {
+            "cookieAuth": []
           }
         ],
         "responses": {
           "200": {
-            "description": "List of notifications",
-            "content": {
-              "application/json": {
-                "example": {
-                  "status": "success",
-                  "results": 2,
-                  "data": [
-                    {
-                      "id": "64b8f17a2f5b4c001f9e1002",
-                      "title": "Tender Accepted",
-                      "message": "Your bid on Tender #123 has been accepted.",
-                      "isRead": false,
-                      "createdAt": "2025-08-09T08:30:00Z"
-                    }
-                  ]
-                }
+            "description": "User profile"
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Logout user",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Logged out successfully"
+          }
+        }
+      }
+    },
+    "/auth/updateMe": {
+      "patch": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Update my details",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
               }
             }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User updated"
+          }
+        }
+      }
+    },
+    "/auth/updatePassword": {
+      "patch": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Update my password",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password updated"
+          }
+        }
+      }
+    },
+    "/sellerCategory": {
+      "get": {
+        "tags": [
+          "Seller Categories"
+        ],
+        "summary": "Get all seller categories",
+        "responses": {
+          "200": {
+            "description": "List of seller categories"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Seller Categories"
+        ],
+        "summary": "Create a seller category",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SellerCategory"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        }
+      }
+    },
+    "/sellerCategory/{id}": {
+      "get": {
+        "tags": [
+          "Seller Categories"
+        ],
+        "summary": "Get seller category by ID",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Seller category"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Seller Categories"
+        ],
+        "summary": "Update seller category",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SellerCategory"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Seller Categories"
+        ],
+        "summary": "Delete seller category",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Deleted"
+          }
+        }
+      }
+    },
+    "/subCategory": {
+      "get": {
+        "tags": [
+          "Sub Categories"
+        ],
+        "summary": "Get all sub categories",
+        "responses": {
+          "200": {
+            "description": "List of sub categories"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Sub Categories"
+        ],
+        "summary": "Create sub category",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubCategory"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        }
+      }
+    },
+    "/subCategory/{id}": {
+      "get": {
+        "tags": [
+          "Sub Categories"
+        ],
+        "summary": "Get sub category by ID",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sub category"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Sub Categories"
+        ],
+        "summary": "Update sub category",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubCategory"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Sub Categories"
+        ],
+        "summary": "Delete sub category",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Deleted"
+          }
+        }
+      }
+    },
+    "/subCategory/category/{id}": {
+      "get": {
+        "tags": [
+          "Sub Categories"
+        ],
+        "summary": "Get sub categories by seller category ID",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of sub categories"
+          }
+        }
+      }
+    },
+    "/advertisements": {
+      "get": {
+        "tags": [
+          "Advertisements"
+        ],
+        "summary": "Get all advertisements",
+        "responses": {
+          "200": {
+            "description": "List of advertisements"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Advertisements"
+        ],
+        "summary": "Create advertisement",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Advertisement"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        }
+      }
+    },
+    "/advertisements/category/{categoryId}": {
+      "get": {
+        "tags": [
+          "Advertisements"
+        ],
+        "summary": "Get advertisements by category",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "categoryId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of advertisements"
+          }
+        }
+      }
+    },
+    "/advertisements/subcategory/{subCategoryId}": {
+      "get": {
+        "tags": [
+          "Advertisements"
+        ],
+        "summary": "Get advertisements by sub category",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "subCategoryId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of advertisements"
+          }
+        }
+      }
+    },
+    "/advertisements/seller": {
+      "get": {
+        "tags": [
+          "Advertisements"
+        ],
+        "summary": "Get advertisements by current seller",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of advertisements"
+          }
+        }
+      }
+    },
+    "/advertisements/{id}": {
+      "patch": {
+        "tags": [
+          "Advertisements"
+        ],
+        "summary": "Update advertisement",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Advertisement"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Advertisements"
+        ],
+        "summary": "Delete advertisement",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Deleted"
+          }
+        }
+      }
+    },
+    "/tenders": {
+      "get": {
+        "tags": [
+          "Tenders"
+        ],
+        "summary": "Get all tenders",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of tenders"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Tenders"
+        ],
+        "summary": "Create tender",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Tender"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        }
+      }
+    },
+    "/tenders/my-bids": {
+      "get": {
+        "tags": [
+          "Tenders"
+        ],
+        "summary": "Get my bids",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of bids"
+          }
+        }
+      }
+    },
+    "/tenders/accept-bid/{id}": {
+      "patch": {
+        "tags": [
+          "Tenders"
+        ],
+        "summary": "Accept bid by ID",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bid accepted"
+          }
+        }
+      }
+    },
+    "/tenders/{id}/bids": {
+      "get": {
+        "tags": [
+          "Tenders"
+        ],
+        "summary": "Get bids for tender ID",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of bids"
+          }
+        }
+      }
+    },
+    "/tenders/bids/{id}": {
+      "post": {
+        "tags": [
+          "Tenders"
+        ],
+        "summary": "Submit bid for tender",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Bid"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Bid submitted"
+          }
+        }
+      }
+    },
+    "/tenders/seller": {
+      "get": {
+        "tags": [
+          "Tenders"
+        ],
+        "summary": "Get tenders based on seller category",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of tenders"
+          }
+        }
+      }
+    },
+    "/tenders/{id}": {
+      "delete": {
+        "tags": [
+          "Tenders"
+        ],
+        "summary": "Delete bid by ID",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Deleted"
+          }
+        }
+      }
+    },
+    "/purchases": {
+      "post": {
+        "tags": [
+          "Purchase Requests"
+        ],
+        "summary": "Create purchase request",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PurchaseRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        }
+      }
+    },
+    "/purchases/advertisement/{id}": {
+      "get": {
+        "tags": [
+          "Purchase Requests"
+        ],
+        "summary": "Get purchase requests for advertisement ID",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of purchase requests"
+          }
+        }
+      }
+    },
+    "/purchases/user": {
+      "get": {
+        "tags": [
+          "Purchase Requests"
+        ],
+        "summary": "Get purchase requests based on seller",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of purchase requests"
+          }
+        }
+      }
+    },
+    "/purchases/{id}": {
+      "get": {
+        "tags": [
+          "Purchase Requests"
+        ],
+        "summary": "Get purchase request by ID",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Purchase request"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Purchase Requests"
+        ],
+        "summary": "Delete purchase request by ID",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Deleted"
+          }
+        }
+      }
+    },
+    "/purchases/reply/{id}": {
+      "patch": {
+        "tags": [
+          "Purchase Requests"
+        ],
+        "summary": "Reply to purchase request",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Reply sent"
+          }
+        }
+      }
+    },
+    "/notifications/my": {
+      "get": {
+        "tags": [
+          "Notifications"
+        ],
+        "summary": "Get my notifications",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of notifications"
+          }
+        }
+      }
+    },
+    "/notifications/{notificationId}/read": {
+      "patch": {
+        "tags": [
+          "Notifications"
+        ],
+        "summary": "Mark notification as read",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "notificationId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Notification marked as read"
           }
         }
       }

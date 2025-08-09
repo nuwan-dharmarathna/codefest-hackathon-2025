@@ -58,6 +58,19 @@ No manual code setup needed — just pull the public Docker image and run:
 docker pull nuwandharmarathna/govichain-backend:v1.0.0
 ```
 
+## 📖 API Documentation
+
+For local development, the API documentation is available via Swagger UI.
+
+- **URL:** [http://localhost:8086/api-docs](http://localhost:8086/api-docs)  
+- **Base URL:** `https://127.0.0.1:8086/api/v1`  
+
+Swagger UI provides an interactive interface to explore all endpoints, request/response formats, and authentication requirements for the GoviChain backend.
+
+> **Note:** Make sure your backend server is running before accessing Swagger UI.
+
+
+
 ### **2. Frontend Setup **
 # Clone the repository
 ```
