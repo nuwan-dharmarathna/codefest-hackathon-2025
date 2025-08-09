@@ -6,6 +6,9 @@ const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 const requestLogger = require('./middleware/loggerMiddleware');
 
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./docs/swagger.json');
+
 const app = express();
 
 app.use(cookieParser());
@@ -28,6 +31,9 @@ app.use(mongoSanitize());
 
 // Request logging middleware - Put it here
 app.use(requestLogger);
+
+// Swagger route
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Default route
 app.get('/', (req, res) => {

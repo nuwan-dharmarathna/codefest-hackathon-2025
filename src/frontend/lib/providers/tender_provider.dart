@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:frontend/models/tender_model.dart';
 import 'package:frontend/services/tender_service.dart';
@@ -20,18 +22,16 @@ class TenderProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      print('Starting to fetch tenders...');
-      final fetchedTenders = await _tenderService.fetchAllTenders();
-      print('Successfully fetched ${fetchedTenders.length} tenders');
-
-      _tenders = fetchedTenders;
+      _tenders = await _tenderService.fetchAllTenders();
       _error = null;
 
+      log("Fetch Tenders from Provider: ${_tenders.length}");
+
       if (_tenders.isEmpty) {
-        print('Note: Tenders list is empty after fetch');
+        log('Note: Tenders list is empty after fetch');
       }
     } catch (e) {
-      print('Error in fetchTenders: $e');
+      log('Error in fetchTenders: $e');
       _tenders = [];
       _error = e.toString();
     } finally {

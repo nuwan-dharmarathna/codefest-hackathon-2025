@@ -1,0 +1,240 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "GoviChain API",
+    "description": "API documentation for the GoviChain marketplace platform",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://127.0.0.1:8086/api/v1",
+      "description": "Local development server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "64b8f17a2f5b4c001f9e0001"
+          },
+          "firstName": {
+            "type": "string",
+            "example": "Nuwan"
+          },
+          "lastName": {
+            "type": "string",
+            "example": "Perera"
+          },
+          "phone": {
+            "type": "string",
+            "example": "0712345678"
+          },
+          "email": {
+            "type": "string",
+            "example": "nuwan@example.com"
+          },
+          "sludiNo": {
+            "type": "string",
+            "example": "123456789012"
+          },
+          "nic": {
+            "type": "string",
+            "example": "200112345678"
+          },
+          "location": {
+            "type": "string",
+            "example": "Kurunegala"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "buyer",
+              "seller"
+            ],
+            "example": "seller"
+          },
+          "isActivated": {
+            "type": "boolean",
+            "example": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "SellerCategory": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Agriculture & Farming"
+          },
+          "slug": {
+            "type": "string",
+            "example": "farmer"
+          },
+          "nameOnBuyerSide": {
+            "type": "string",
+            "example": "Agricultural"
+          },
+          "imageOnSellerSide": {
+            "type": "string",
+            "example": "agriculture.png"
+          },
+          "imageOnBuyerSide": {
+            "type": "string",
+            "example": "agri.png"
+          },
+          "description": {
+            "type": "string",
+            "example": "Fruits, vegetables, grains and crops"
+          }
+        }
+      },
+      "Notification": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "64b8f17a2f5b4c001f9e1002"
+          },
+          "userId": {
+            "type": "string",
+            "example": "64b8f17a2f5b4c001f9e0001"
+          },
+          "title": {
+            "type": "string",
+            "example": "Tender Accepted"
+          },
+          "message": {
+            "type": "string",
+            "example": "Your bid on Tender #123 has been accepted."
+          },
+          "isRead": {
+            "type": "boolean",
+            "example": false
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/auth/signup": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Register a new user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              },
+              "example": {
+                "firstName": "Nuwan",
+                "lastName": "Perera",
+                "phone": "0712345678",
+                "email": "nuwan@example.com",
+                "sludiNo": "123456789012",
+                "nic": "200112345678",
+                "location": "Kurunegala",
+                "password": "testpass123",
+                "passwordConfirm": "testpass123",
+                "role": "seller",
+                "category": "64b7e934dfd3290ee4f30ef1",
+                "businessName": "Nuwan Farm Products"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User registered successfully",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI...",
+                  "data": {
+                    "user": {
+                      "id": "64b8f17a2f5b4c001f9e0001",
+                      "firstName": "Nuwan",
+                      "lastName": "Perera",
+                      "role": "seller"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/notifications/{userId}": {
+      "get": {
+        "tags": [
+          "Notifications"
+        ],
+        "summary": "Get all notifications for a user",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of the user"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of notifications",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "results": 2,
+                  "data": [
+                    {
+                      "id": "64b8f17a2f5b4c001f9e1002",
+                      "title": "Tender Accepted",
+                      "message": "Your bid on Tender #123 has been accepted.",
+                      "isRead": false,
+                      "createdAt": "2025-08-09T08:30:00Z"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

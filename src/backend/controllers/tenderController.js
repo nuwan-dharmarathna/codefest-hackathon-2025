@@ -68,19 +68,21 @@ exports.createTender = catchAsync(async(req,res, next)=>{
     });
 });
 
-exports.getAllTenders = catchAsync(async(req,res,next)=>{
-  const tenders = await Tender.find()
-  .populate('category')
-  .populate('subCategory');
+// exports.getAllTenders = catchAsync(async(req,res,next)=>{
+//   const tenders = await Tender.find()
+//   .populate('category')
+//   .populate('subCategory');
 
-  res.status(200).json({
-      status: 'success',
-      results: tenders.length,
-      data: {
-        data: tenders,
-      },
-    });
-});
+//   res.status(200).json({
+//       status: 'success',
+//       results: tenders.length,
+//       data: {
+//         data: tenders,
+//       },
+//     });
+// });
+
+exports.getAllTenders = factory.getAll(Tender);
 
 exports.getTender = factory.getOne(Tender);
 
