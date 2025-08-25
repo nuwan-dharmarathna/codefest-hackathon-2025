@@ -26,12 +26,14 @@ GoviChain is a **role-based digital marketplace** that directly connects farmers
 - **Role-based access control**
 - **Transparent pricing system**
 
-## 📋 Important Note: Service Integrations
-*For competition purposes only* - The following mock validations are implemented pending official endpoints:
+## 🔐 SLUDI Integration
 
-### SLUDI Validation
-- Format: `SL` followed by exactly 6 digits
-- Example: `SL123456` (valid)
+> ⚠️ **Note:** SLUDI validation is currently implemented as a **mock validation** for competition purposes.  
+> Official **esignet-based integration** is still under development to comply with the [SLUDI Authentication Guide](https://docs.esignet.io/esignet-authentication/develop)
+
+### Roadmap
+- [x] Mock validation implemented  
+- [ ] Full SLUDI integration with **esignet** (in progress) 
 
 ### NDX Integration
 - Mocked control price comparisons
@@ -46,7 +48,7 @@ GoviChain is a **role-based digital marketplace** that directly connects farmers
 |------------------|-------------------------------------|
 | Frontend         | Flutter (Cross-platform)            |
 | Backend          | Node.js (Express + MongoDB)         |
-| Authentication  | JWT-based secure access             |
+| Authentication   | JWT-based secure access             |
 | Deployment       | Docker containers                   |
 | API Docs         | Swagger UI                          |
 
