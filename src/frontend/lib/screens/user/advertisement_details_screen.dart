@@ -18,6 +18,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final lowestPrice = ad.priceTiers.isNotEmpty
         ? ad.priceTiers.reduce((a, b) => a.price < b.price ? a : b).price
         : 0;
@@ -36,7 +37,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                   title: Text(
                     ad.name,
                     style: TextStyle(
-                      color: Colors.white,
+                      color: colorScheme.onSurface,
                       fontSize: 16,
                       shadows: [
                         Shadow(
@@ -51,17 +52,17 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                 actions: [
                   if (userProvider.user!.role == UserRole.seller)
                     IconButton(
-                      icon: const Icon(Icons.delete, color: Colors.white),
+                      icon: Icon(Icons.delete, color: colorScheme.onPrimary),
                       onPressed: () => _shareAdvertisement(context),
                     ),
                   IconButton(
-                    icon: const Icon(Icons.share, color: Colors.white),
+                    icon: Icon(Icons.share, color: colorScheme.onPrimary),
                     onPressed: () => _shareAdvertisement(context),
                   ),
                   IconButton(
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.favorite_border,
-                      color: Colors.white,
+                      color: colorScheme.onPrimary,
                     ),
                     onPressed: () {},
                   ),
@@ -86,13 +87,13 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                               vertical: 6,
                             ),
                             decoration: BoxDecoration(
-                              color: theme.primaryColor.withOpacity(0.1),
+                              color: colorScheme.primary.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Text(
                               'From LKR. ${lowestPrice.toStringAsFixed(2)}/${ad.unit.name}',
                               style: theme.textTheme.titleLarge?.copyWith(
-                                color: theme.primaryColor,
+                                color: colorScheme.primary,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -115,7 +116,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                           Icon(
                             Icons.location_on_outlined,
                             size: 20,
-                            color: theme.primaryColor,
+                            color: colorScheme.primary,
                           ),
                           const SizedBox(width: 8),
                           Expanded(
@@ -131,7 +132,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                                 vertical: 4,
                               ),
                               decoration: BoxDecoration(
-                                color: theme.primaryColor.withOpacity(0.1),
+                                color: colorScheme.primary.withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Row(
@@ -140,13 +141,13 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                                   Icon(
                                     Icons.delivery_dining,
                                     size: 16,
-                                    color: theme.primaryColor,
+                                    color: colorScheme.primary,
                                   ),
                                   const SizedBox(width: 4),
                                   Text(
                                     'Delivery',
                                     style: TextStyle(
-                                      color: theme.primaryColor,
+                                      color: colorScheme.primary,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -178,7 +179,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: Colors.grey.shade50,
+                          color: theme.colorScheme.surface.withOpacity(0.7),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
@@ -201,7 +202,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: Colors.grey.shade50,
+                            color: theme.colorScheme.surface.withOpacity(0.7),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
@@ -212,7 +213,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                       else
                         Container(
                           decoration: BoxDecoration(
-                            color: Colors.grey.shade50,
+                            color: theme.colorScheme.surface.withOpacity(0.7),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Column(
@@ -223,7 +224,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                                     horizontal: 12,
                                     vertical: 8,
                                   ),
-                                  child: _buildPriceTierItem(tier),
+                                  child: _buildPriceTierItem(tier, theme),
                                 ),
                               ),
                             ],
@@ -243,14 +244,14 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: Colors.grey.shade50,
+                          color: theme.colorScheme.surface.withOpacity(0.7),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Row(
                           children: [
                             Icon(
                               Icons.inventory_2_outlined,
-                              color: theme.primaryColor,
+                              color: colorScheme.primary,
                             ),
                             const SizedBox(width: 12),
                             Text(
@@ -278,11 +279,15 @@ class AdvertisementDetailsScreen extends StatelessWidget {
   }
 
   Widget _buildImageGallery(BuildContext context) {
+    final theme = Theme.of(context);
+
     if (ad.images!.isEmpty) {
       return Container(
-        color: Colors.grey[200],
-        child: const Center(
-          child: Icon(Icons.photo, size: 50, color: Colors.grey),
+        color: theme.colorScheme.surface.withOpacity(0.5),
+        child: Icon(
+          Icons.photo,
+          size: 50,
+          color: theme.colorScheme.onSurface.withOpacity(0.5),
         ),
       );
     }
@@ -297,8 +302,10 @@ class AdvertisementDetailsScreen extends StatelessWidget {
               imageUrl: ad.images![index],
               width: double.infinity,
               fit: BoxFit.cover,
-              placeholder: (context, url) => Container(color: Colors.grey[200]),
-              errorWidget: (context, url, error) => const Icon(Icons.error),
+              placeholder: (context, url) =>
+                  Container(color: theme.colorScheme.surface.withOpacity(0.5)),
+              errorWidget: (context, url, error) =>
+                  Icon(Icons.error, color: theme.colorScheme.error),
             );
           },
         ),
@@ -339,7 +346,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPriceTierItem(PriceTier tier) {
+  Widget _buildPriceTierItem(PriceTier tier, ThemeData theme) {
     return Row(
       children: [
         Expanded(
@@ -348,12 +355,15 @@ class AdvertisementDetailsScreen extends StatelessWidget {
             children: [
               Text(
                 '${tier.minQuantity} - ${tier.maxQuantity} ${ad.unit.name}',
-                style: const TextStyle(fontSize: 16),
+                style: theme.textTheme.bodyLarge,
               ),
               if (tier.maxQuantity != double.infinity)
                 Text(
                   'Save ${(100 - (tier.price / ad.priceTiers[0].price * 100)).toStringAsFixed(0)}%',
-                  style: TextStyle(fontSize: 12, color: Colors.green.shade700),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: theme.colorScheme.secondary,
+                  ),
                 ),
             ],
           ),
@@ -361,12 +371,16 @@ class AdvertisementDetailsScreen extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
-            color: Colors.blue.shade50,
+            color: theme.colorScheme.primary.withOpacity(0.1),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Text(
             'LKR. ${tier.price.toStringAsFixed(2)}/${ad.unit.name}',
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+              color: theme.colorScheme.primary,
+            ),
           ),
         ),
       ],
@@ -374,15 +388,16 @@ class AdvertisementDetailsScreen extends StatelessWidget {
   }
 
   Widget _buildActionButtons(BuildContext context) {
+    final theme = Theme.of(context);
     final isSeller = context.read<UserProvider>().user?.role == UserRole.seller;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
+        color: theme.scaffoldBackgroundColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: theme.colorScheme.onSurface.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, -5),
           ),
@@ -396,12 +411,18 @@ class AdvertisementDetailsScreen extends StatelessWidget {
               child: Container(
                 height: 50,
                 decoration: BoxDecoration(
-                  border: Border.all(color: Theme.of(context).primaryColor),
+                  border: Border.all(color: theme.colorScheme.primary),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: TextButton.icon(
-                  icon: const Icon(Icons.chat_outlined),
-                  label: const Text('Chat'),
+                  icon: Icon(
+                    Icons.chat_outlined,
+                    color: theme.colorScheme.primary,
+                  ),
+                  label: Text(
+                    'Chat',
+                    style: TextStyle(color: theme.colorScheme.primary),
+                  ),
                   onPressed: () {
                     showDialog(
                       context: context,
@@ -413,9 +434,6 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                       ),
                     );
                   },
-                  style: TextButton.styleFrom(
-                    foregroundColor: Theme.of(context).primaryColor,
-                  ),
                 ),
               ),
             ),

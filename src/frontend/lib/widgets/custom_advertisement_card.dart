@@ -20,18 +20,19 @@ class _AdvertisementCardState extends State<AdvertisementCard> {
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(); // Initialize the controller here
+    _pageController = PageController();
   }
 
   @override
   void dispose() {
-    _pageController.dispose(); // Don't forget to dispose it
+    _pageController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final priceTier = widget.ad.priceTiers.isNotEmpty
         ? widget.ad.priceTiers.first
         : null;
@@ -39,6 +40,7 @@ class _AdvertisementCardState extends State<AdvertisementCard> {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
         onTap: widget.onTap,
@@ -63,6 +65,7 @@ class _AdvertisementCardState extends State<AdvertisementCard> {
                           widget.ad.name,
                           style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
+                            color: colorScheme.onSurface,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -72,7 +75,7 @@ class _AdvertisementCardState extends State<AdvertisementCard> {
                         Text(
                           '${priceTier.price.toStringAsFixed(2)}/${widget.ad.unit.name}',
                           style: theme.textTheme.titleMedium?.copyWith(
-                            color: theme.primaryColor,
+                            color: colorScheme.primary,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -84,7 +87,9 @@ class _AdvertisementCardState extends State<AdvertisementCard> {
                   // Description
                   Text(
                     widget.ad.description,
-                    style: theme.textTheme.bodySmall,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onSurface.withOpacity(0.7),
+                    ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -100,24 +105,30 @@ class _AdvertisementCardState extends State<AdvertisementCard> {
                         color: theme.hintColor,
                       ),
                       const SizedBox(width: 4),
-                      Text(
-                        widget.ad.location!,
-                        style: theme.textTheme.bodySmall,
+                      Expanded(
+                        child: Text(
+                          widget.ad.location!,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: colorScheme.onSurface.withOpacity(0.7),
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
-                      const Spacer(),
+                      const SizedBox(width: 8),
                       if (widget.ad.deliveryAvailable)
                         Row(
                           children: [
                             Icon(
                               Icons.delivery_dining,
                               size: 16,
-                              color: theme.primaryColor,
+                              color: colorScheme.primary,
                             ),
                             const SizedBox(width: 4),
                             Text(
                               'Delivery',
                               style: theme.textTheme.bodySmall?.copyWith(
-                                color: theme.primaryColor,
+                                color: colorScheme.primary,
                               ),
                             ),
                           ],
@@ -134,15 +145,22 @@ class _AdvertisementCardState extends State<AdvertisementCard> {
   }
 
   Widget _buildImageGallery(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     if (widget.ad.images!.isEmpty) {
       return Container(
         height: 150,
         decoration: BoxDecoration(
-          color: Colors.grey[200],
+          color: colorScheme.surface.withOpacity(0.5),
           borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
         ),
-        child: const Center(
-          child: Icon(Icons.photo, size: 50, color: Colors.grey),
+        child: Center(
+          child: Icon(
+            Icons.photo,
+            size: 50,
+            color: colorScheme.onSurface.withOpacity(0.5),
+          ),
         ),
       );
     }
@@ -168,8 +186,9 @@ class _AdvertisementCardState extends State<AdvertisementCard> {
                   width: double.infinity,
                   fit: BoxFit.cover,
                   placeholder: (context, url) =>
-                      Container(color: Colors.grey[200]),
-                  errorWidget: (context, url, error) => const Icon(Icons.error),
+                      Container(color: colorScheme.surface.withOpacity(0.5)),
+                  errorWidget: (context, url, error) =>
+                      Icon(Icons.error, color: colorScheme.error),
                 );
               },
             ),
@@ -191,8 +210,8 @@ class _AdvertisementCardState extends State<AdvertisementCard> {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: _currentPage == index
-                          ? Colors.white
-                          : Colors.white.withOpacity(0.5),
+                          ? colorScheme.onPrimary
+                          : colorScheme.onPrimary.withOpacity(0.5),
                     ),
                   );
                 }),
