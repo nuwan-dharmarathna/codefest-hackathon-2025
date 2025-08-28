@@ -53,7 +53,7 @@ class TenderService {
         headers: await _getHeaders(),
       );
 
-      log("Response -> ${response.body}");
+      // log("Response -> ${response.body}");
 
       if (response.statusCode == 200) {
         log("Get All Tender API Call success");

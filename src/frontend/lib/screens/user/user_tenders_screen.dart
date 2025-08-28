@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:frontend/models/user_model.dart';
 import 'package:frontend/screens/user/tender_create_screen.dart';
@@ -30,7 +32,7 @@ class _UserTendersScreenState extends State<UserTendersScreen> {
 
     try {
       if (userProvider.user!.role == UserRole.seller) {
-        await tenderProvider.fetchTendersBasedOnSellerCategory();
+        await tenderProvider.fetchTenders();
       } else {
         await tenderProvider.fetchTenders();
       }
@@ -119,14 +121,17 @@ class _UserTendersScreenState extends State<UserTendersScreen> {
                   itemCount: tenderProvider.tenders.length,
                   itemBuilder: (context, index) {
                     final tender = tenderProvider.tenders[index];
+                    log("Tender Name: ${tender.title}");
                     return CustomTenderCard(
                       tender: tender,
                       onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) =>
-                                TenderDetailsScreen(tender: tender),
+                            builder: (context) => TenderDetailsScreen(
+                              tender: tender,
+                              currentUserRole: userProvider.user!.role!,
+                            ),
                           ),
                         );
                       },

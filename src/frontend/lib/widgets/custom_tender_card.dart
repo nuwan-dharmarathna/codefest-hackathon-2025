@@ -13,12 +13,14 @@ class CustomTenderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final isBuyer = tender.role == UserRole.buyer;
     final categoryName = _getCategoryName(tender.category);
     final subCategoryName = _getSubCategoryName(tender.subCategory);
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      color: colorScheme.onSurface.withOpacity(0.05),
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
@@ -29,37 +31,30 @@ class CustomTenderCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header with title and status
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          tender.title,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        if (categoryName != null) ...[
-                          const SizedBox(height: 4),
-                          Text(
-                            categoryName,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: Colors.grey.shade600,
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                  if (tender.isClosed!) _buildStatusBadge('CLOSED', Colors.red),
-                ],
+              // Title
+              Text(
+                tender.title,
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: colorScheme.onSurface,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
+
+              const SizedBox(height: 8),
+
+              // Category and subcategory
+              if (categoryName != null || subCategoryName != null)
+                Wrap(
+                  spacing: 8,
+                  children: [
+                    if (categoryName != null)
+                      _buildCategoryChip(categoryName, colorScheme, theme),
+                    if (subCategoryName != null)
+                      _buildCategoryChip(subCategoryName, colorScheme, theme),
+                  ],
+                ),
 
               const SizedBox(height: 12),
 
@@ -67,105 +62,66 @@ class CustomTenderCard extends StatelessWidget {
               Text(
                 tender.description,
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: Colors.grey.shade800,
+                  color: colorScheme.onSurface.withOpacity(0.8),
                 ),
-                maxLines: 2,
+                maxLines: 3,
                 overflow: TextOverflow.ellipsis,
               ),
 
               const SizedBox(height: 16),
 
-              // Details row
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  // Quantity
-                  _buildDetailChip(
-                    icon: Icons.scale,
-                    label: '${tender.quantity} ${unitsToString(tender.unit)}',
-                  ),
-
-                  // Subcategory
-                  if (subCategoryName != null)
-                    _buildDetailChip(
-                      icon: Icons.category,
-                      label: subCategoryName,
+              // Details section
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: colorScheme.surfaceVariant,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    // Quantity
+                    _buildDetailItem(
+                      icon: Icons.scale,
+                      label: 'Quantity',
+                      value: '${tender.quantity} ${unitsToString(tender.unit)}',
+                      theme: theme,
+                      colorScheme: colorScheme,
                     ),
 
-                  // Time
-                  _buildDetailChip(
-                    icon: Icons.access_time,
-                    label: DateFormat('MMM dd').format(tender.createdAt!),
-                  ),
-                ],
-              ),
+                    // Vertical divider
+                    Container(
+                      width: 1,
+                      height: 40,
+                      color: colorScheme.outline.withOpacity(0.2),
+                    ),
 
-              const SizedBox(height: 12),
+                    // Date
+                    _buildDetailItem(
+                      icon: Icons.calendar_today,
+                      label: 'Posted',
+                      value: DateFormat('MMM dd').format(tender.createdAt!),
+                      theme: theme,
+                      colorScheme: colorScheme,
+                    ),
 
-              // Footer with type and action button
-              Row(
-                children: [
-                  // Type indicator
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
+                    // Vertical divider
+                    Container(
+                      width: 1,
+                      height: 40,
+                      color: colorScheme.outline.withOpacity(0.2),
                     ),
-                    decoration: BoxDecoration(
-                      color: isBuyer
-                          ? Colors.blue.shade50
-                          : Colors.orange.shade50,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: isBuyer
-                            ? Colors.blue.shade100
-                            : Colors.orange.shade100,
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          isBuyer ? Icons.shopping_cart : Icons.store,
-                          size: 16,
-                          color: isBuyer
-                              ? Colors.blue.shade800
-                              : Colors.orange.shade800,
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          isBuyer ? 'Buying' : 'Selling',
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: isBuyer
-                                ? Colors.blue.shade800
-                                : Colors.orange.shade800,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
 
-                  const Spacer(),
-
-                  // Action button
-                  OutlinedButton(
-                    onPressed: onTap,
-                    style: OutlinedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      side: BorderSide(color: theme.primaryColor),
+                    // Type
+                    _buildDetailItem(
+                      icon: isBuyer ? Icons.shopping_cart : Icons.store,
+                      label: 'Type',
+                      value: isBuyer ? 'Buyer Request' : 'Seller Request',
+                      theme: theme,
+                      colorScheme: colorScheme,
                     ),
-                    child: Text(
-                      isBuyer ? 'Make Offer' : 'Place Bid',
-                      style: theme.textTheme.labelMedium?.copyWith(
-                        color: theme.primaryColor,
-                      ),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
           ),
@@ -174,40 +130,49 @@ class CustomTenderCard extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusBadge(String text, Color color) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.3)),
-      ),
-      child: Text(
+  Widget _buildCategoryChip(
+    String text,
+    ColorScheme colorScheme,
+    ThemeData theme,
+  ) {
+    return Chip(
+      label: Text(
         text,
-        style: TextStyle(
-          color: color,
-          fontSize: 12,
-          fontWeight: FontWeight.bold,
-        ),
+        style: theme.textTheme.labelSmall?.copyWith(color: colorScheme.primary),
       ),
+      backgroundColor: colorScheme.primary.withOpacity(0.1),
+      visualDensity: VisualDensity.compact,
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      padding: EdgeInsets.zero,
     );
   }
 
-  Widget _buildDetailChip({required IconData icon, required String label}) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.grey.shade100,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
+  Widget _buildDetailItem({
+    required IconData icon,
+    required String label,
+    required String value,
+    required ThemeData theme,
+    required ColorScheme colorScheme,
+  }) {
+    return Expanded(
+      child: Column(
         children: [
-          Icon(icon, size: 16, color: Colors.grey.shade600),
-          const SizedBox(width: 4),
+          Icon(icon, size: 20, color: colorScheme.primary),
+          const SizedBox(height: 4),
           Text(
             label,
-            style: TextStyle(fontSize: 12, color: Colors.grey.shade800),
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: colorScheme.onSurface.withOpacity(0.6),
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            value,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: colorScheme.onSurface,
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
           ),
         ],
       ),
