@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/tender_model.dart';
 import 'package:frontend/models/user_model.dart';
+import 'package:frontend/providers/user_provider.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class TenderDetailsScreen extends StatelessWidget {
   final TenderModel tender;
@@ -360,6 +362,7 @@ class TenderDetailsScreen extends StatelessWidget {
   }
 
   Widget _buildActionButton(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final isBuyer = tender.role == UserRole.buyer;
@@ -391,7 +394,9 @@ class TenderDetailsScreen extends StatelessWidget {
                 : colorScheme.secondary,
           ),
           child: Text(
-            currentUserRole == UserRole.buyer
+            userProvider.user!.id == tender.createdBy
+                ? 'See Seller Bids'
+                : currentUserRole == UserRole.buyer
                 ? 'See Seller Bids'
                 : 'Place a Bid',
             style: theme.textTheme.labelLarge?.copyWith(

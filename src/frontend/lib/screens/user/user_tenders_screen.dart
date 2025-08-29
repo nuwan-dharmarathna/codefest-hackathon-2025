@@ -24,6 +24,22 @@ class _UserTendersScreenState extends State<UserTendersScreen> {
     });
   }
 
+  Future<void> _refreshData() async {
+    final userProvider = context.read<UserProvider>();
+    final tenderProvider = context.read<TenderProvider>();
+
+    try {
+      if (userProvider.user!.role == UserRole.seller) {
+        await tenderProvider.fetchTendersBasedOnSellerCategory();
+      } else {
+        await tenderProvider.fetchTenders();
+      }
+    } catch (e) {
+      print('Error refreshing tenders: $e');
+      // You might want to show a snackbar with the error here
+    }
+  }
+
   Future<void> _loadInitialData() async {
     final userProvider = context.read<UserProvider>();
     final tenderProvider = context.read<TenderProvider>();
@@ -34,14 +50,9 @@ class _UserTendersScreenState extends State<UserTendersScreen> {
       } else {
         await tenderProvider.fetchTenders();
       }
-
-      // Debug print to verify data
-      print('Tenders loaded: ${tenderProvider.tenders.length}');
-      if (tenderProvider.tenders.isNotEmpty) {
-        print('First tender title: ${tenderProvider.tenders.first.title}');
-      }
     } catch (e) {
       print('Error loading tenders: $e');
+      // You might want to show a snackbar with the error here
     }
   }
 
@@ -67,8 +78,8 @@ class _UserTendersScreenState extends State<UserTendersScreen> {
           if (userProvider.user!.role == UserRole.buyer)
             const CategorySelector(),
 
-          // Loading indicator
-          if (tenderProvider.isLoading)
+          // Loading indicator for initial load
+          if (tenderProvider.isLoading && tenderProvider.tenders.isEmpty)
             const Expanded(child: Center(child: CircularProgressIndicator()))
           else if (tenderProvider.error != null)
             // Error message
@@ -110,10 +121,10 @@ class _UserTendersScreenState extends State<UserTendersScreen> {
               ),
             )
           else
-            // Tenders list
+            // Tenders list with pull-to-refresh
             Expanded(
               child: RefreshIndicator(
-                onRefresh: _loadInitialData,
+                onRefresh: _refreshData,
                 child: ListView.builder(
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   itemCount: tenderProvider.tenders.length,

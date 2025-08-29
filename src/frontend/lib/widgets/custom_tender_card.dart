@@ -116,7 +116,7 @@ class CustomTenderCard extends StatelessWidget {
                     _buildDetailItem(
                       icon: isBuyer ? Icons.shopping_cart : Icons.store,
                       label: 'Type',
-                      value: isBuyer ? 'Buyer Request' : 'Seller Request',
+                      value: isBuyer ? 'Buyer Tender' : 'Seller Tender',
                       theme: theme,
                       colorScheme: colorScheme,
                     ),

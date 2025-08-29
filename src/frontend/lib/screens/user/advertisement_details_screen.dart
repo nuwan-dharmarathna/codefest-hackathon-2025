@@ -59,13 +59,14 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                     icon: Icon(Icons.share, color: colorScheme.onPrimary),
                     onPressed: () => _shareAdvertisement(context),
                   ),
-                  IconButton(
-                    icon: Icon(
-                      Icons.favorite_border,
-                      color: colorScheme.onPrimary,
+                  if (userProvider.user!.role == UserRole.buyer)
+                    IconButton(
+                      icon: Icon(
+                        Icons.favorite_border,
+                        color: colorScheme.onPrimary,
+                      ),
+                      onPressed: () {},
                     ),
-                    onPressed: () {},
-                  ),
                 ],
               ),
               SliverToBoxAdapter(
@@ -444,7 +445,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
             child: CustomSubmitButton(
               onPressed: () =>
                   isSeller ? _seeOrders(context) : _placeOrder(context, ad),
-              lableText: isSeller ? "Manage Orders" : "Place Order",
+              lableText: isSeller ? "View Order Requests" : "Place Order",
               isLoading: false,
             ),
           ),
