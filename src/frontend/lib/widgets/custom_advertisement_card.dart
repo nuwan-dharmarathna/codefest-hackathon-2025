@@ -40,7 +40,7 @@ class _AdvertisementCardState extends State<AdvertisementCard> {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
+      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.07),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
         onTap: widget.onTap,

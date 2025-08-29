@@ -47,8 +47,8 @@ class TenderModel {
   UserRole? role;
   final String title;
   final String description;
-  final String category;
-  final String subCategory;
+  final dynamic category;
+  final dynamic subCategory;
   final double quantity;
   final Units unit;
   final bool deliveryRequired;
@@ -75,6 +75,20 @@ class TenderModel {
     this.createdAt,
     this.updatedAt,
   });
+
+  // Helper method to get category name
+  String get categoryName {
+    if (category is String) return category;
+    if (category is Map<String, dynamic>) return category['name'] ?? '';
+    return '';
+  }
+
+  // Helper method to get subcategory name
+  String get subCategoryName {
+    if (subCategory is String) return subCategory;
+    if (subCategory is Map<String, dynamic>) return subCategory['name'] ?? '';
+    return '';
+  }
 
   factory TenderModel.fromJson(Map<String, dynamic> json) {
     try {

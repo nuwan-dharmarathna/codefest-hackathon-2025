@@ -89,7 +89,7 @@ exports.getTender = factory.getOne(Tender);
 exports.getTendersBasedOnSellerCategory = catchAsync(async(req, res, next)=>{
   const user = req.user;
 
-  const tenders = await Tender.find({category : user.category});
+  const tenders = await Tender.find({category : user.category}).populate('category').populate('subCategory');
 
   res.status(200).json({
     status : 'success',

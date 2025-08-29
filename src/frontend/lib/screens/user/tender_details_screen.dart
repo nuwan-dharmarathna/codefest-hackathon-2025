@@ -185,14 +185,14 @@ class TenderDetailsScreen extends StatelessWidget {
             _buildDetailRow(
               context,
               label: 'Category',
-              value: tender.category,
+              value: tender.categoryName,
               icon: Icons.category,
             ),
             if (tender.subCategory.isNotEmpty)
               _buildDetailRow(
                 context,
                 label: 'Subcategory',
-                value: tender.subCategory,
+                value: tender.subCategoryName,
                 icon: Icons.category_outlined,
               ),
             _buildDetailRow(

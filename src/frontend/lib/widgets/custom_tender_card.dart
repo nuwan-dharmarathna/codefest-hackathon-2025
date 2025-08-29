@@ -15,12 +15,12 @@ class CustomTenderCard extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final isBuyer = tender.role == UserRole.buyer;
-    final categoryName = _getCategoryName(tender.category);
-    final subCategoryName = _getSubCategoryName(tender.subCategory);
+    final categoryName = _getCategoryName(tender.categoryName);
+    final subCategoryName = _getSubCategoryName(tender.subCategoryName);
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      color: colorScheme.onSurface.withOpacity(0.05),
+      color: colorScheme.onSurface.withOpacity(0.07),
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
