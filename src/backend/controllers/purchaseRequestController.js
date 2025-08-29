@@ -113,7 +113,7 @@ exports.getRequestsBasedOnSeller = catchAsync(async(req, res, next)=>{
         { $sort: { createdAt: -1 } }
     ]);
 
-    res.status(201).json({
+    res.status(200).json({
         status: 'success',
         results: requests.length,
         data: {

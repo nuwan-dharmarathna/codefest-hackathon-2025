@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:frontend/models/purchase_request_model.dart';
 import 'package:frontend/services/auth_service.dart';
@@ -30,16 +31,43 @@ class PurchaseRequestService {
         headers: await _getHeaders(),
       );
 
+      log("Purchase Requests API Call Success");
+
+      log("Response : ${response.body}");
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseBody = json.decode(response.body);
 
+        final List<dynamic> data = responseBody['data']['requests'];
+        return data.map((json) => PurchaseRequestModel.fromJson(json)).toList();
+      } else {
+        throw Exception('Failed to load Requests from Service Class');
+      }
+    } catch (e) {
+      throw Exception('Failed to load requests from Service Class : $e');
+    }
+  }
+
+  Future<List<PurchaseRequestModel>> fetchRequestsBasedOnAdvertisement(
+    String id,
+  ) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$url/advertisement/$id'),
+        headers: await _getHeaders(),
+      );
+
+      log("Response -> ${response.body}");
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseBody = json.decode(response.body);
         final List<dynamic> data = responseBody['data']['data'];
         return data.map((json) => PurchaseRequestModel.fromJson(json)).toList();
       } else {
         throw Exception('Failed to load Tenders');
       }
     } catch (e) {
-      throw Exception('Failed to load tenders');
+      log("Error fetching tender $id: $e");
+      throw Exception('Failed to load tender');
     }
   }
 }

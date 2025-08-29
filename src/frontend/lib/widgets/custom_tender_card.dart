@@ -31,15 +31,46 @@ class CustomTenderCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Title
-              Text(
-                tender.title,
-                style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: colorScheme.onSurface,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+              // Title with status badge
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      tender.title,
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: colorScheme.onSurface,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(left: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: tender.isClosed!
+                          ? Colors.red.withOpacity(0.1)
+                          : Colors.green.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: tender.isClosed!
+                            ? Colors.red.withOpacity(0.3)
+                            : Colors.green.withOpacity(0.3),
+                      ),
+                    ),
+                    child: Text(
+                      tender.isClosed! ? 'Closed' : 'Ongoing',
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: tender.isClosed! ? Colors.red : Colors.green,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
               ),
 
               const SizedBox(height: 8),
@@ -140,7 +171,7 @@ class CustomTenderCard extends StatelessWidget {
         text,
         style: theme.textTheme.labelSmall?.copyWith(color: colorScheme.primary),
       ),
-      backgroundColor: colorScheme.primary.withOpacity(0.1),
+      backgroundColor: colorScheme.onSurface.withOpacity(0.07),
       visualDensity: VisualDensity.compact,
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       padding: EdgeInsets.zero,

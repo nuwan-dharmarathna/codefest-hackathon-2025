@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:nativewrappers/_internal/vm/lib/ffi_native_type_patch.dart';
 
 import 'package:frontend/models/tender_model.dart';
 
@@ -39,15 +38,15 @@ Status statusFromString(String status) {
 
 class PurchaseRequestModel {
   String? id;
-  String? advertisement;
-  String? buyerId;
+  dynamic advertisement;
+  dynamic buyerId;
   final double quantity;
   Units? unit;
   Status? status;
   String? rejectionStatus;
   double? pricePerUnit;
   double? totalPrice;
-  Bool? wantToImportThem;
+  bool? wantToImportThem;
   String? deliveryLocation;
   DateTime? createdAt;
 
@@ -66,20 +65,36 @@ class PurchaseRequestModel {
     this.createdAt,
   });
 
+  // Helper method to get Advertisement Name
+  String get advertisementName {
+    if (advertisement is String) return advertisement;
+    if (advertisement is Map<String, dynamic>) return advertisement['name'];
+    return '';
+  }
+
+  // Helper method to get Buyer Name
+  String get buyerName {
+    if (buyerId is String) return buyerId;
+    if (buyerId is Map<String, dynamic>) {
+      return buyerId['firstName'] + buyerId['lastName'];
+    }
+    return '';
+  }
+
   factory PurchaseRequestModel.fromJson(Map<String, dynamic> json) {
     return PurchaseRequestModel(
       id: json['_id'],
       advertisement: json['advertisement'],
       buyerId: json['buyer'],
-      quantity: json['quantity'],
+      quantity: json['quantity'].toDouble(),
       unit: unitsFromString(json['unit']),
       status: statusFromString(json['status']),
       rejectionStatus: json['rejectionStatus'],
-      pricePerUnit: json['pricePerUnit'],
-      totalPrice: json['totalPrice'],
+      pricePerUnit: json['pricePerUnit'].toDouble(),
+      totalPrice: json['totalPrice'].toDouble(),
       wantToImportThem: json['wantToImportThem'],
       deliveryLocation: json['deliveryLocation'],
-      createdAt: json['createdAt'],
+      createdAt: DateTime.parse(json['createdAt']),
     );
   }
 
