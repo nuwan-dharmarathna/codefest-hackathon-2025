@@ -96,31 +96,41 @@ exports.getRequestsForAdvertisement = catchAsync(async(req, res, next)=>{
     });
 });
 
-exports.getRequestsBasedOnSeller = catchAsync(async(req, res, next)=>{
-    const user = req.user;
+exports.getRequestsBasedOnSeller = catchAsync(async (req, res, next) => {
+  const user = req.user;
 
-    const requests = await PurchaseRequest.aggregate([
-        {
-            $lookup: {
-            from: 'advertisements',
-            localField: 'advertisement',
-            foreignField: '_id',
-            as: 'advertisement'
-            }
-        },
-        { $unwind: '$advertisement' },
-        { $match: { 'advertisement.seller': user._id } },
-        { $sort: { createdAt: -1 } }
-    ]);
+  const requests = await PurchaseRequest.aggregate([
+    {
+      $lookup: {
+        from: 'advertisements',
+        localField: 'advertisement',
+        foreignField: '_id',
+        as: 'advertisement'
+      }
+    },
+    { $unwind: '$advertisement' },
+    { $match: { 'advertisement.seller': user._id } },
+    {
+      $lookup: {
+        from: 'users', // name of your users collection
+        localField: 'buyer',
+        foreignField: '_id',
+        as: 'buyer'
+      }
+    },
+    { $unwind: '$buyer' }, // if you want a single object instead of array
+    { $sort: { createdAt: -1 } }
+  ]);
 
-    res.status(200).json({
-        status: 'success',
-        results: requests.length,
-        data: {
-            requests
-        }
-    });
+  res.status(200).json({
+    status: 'success',
+    results: requests.length,
+    data: {
+      requests
+    }
+  });
 });
+
 
 exports.replyToPurchaseRequest = catchAsync(async(req,res,next)=>{
     const { purchaseRequestStatus, description, paymentMethod } = req.body;

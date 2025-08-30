@@ -1,106 +1,90 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/models/purchase_request_model.dart';
 import 'package:frontend/models/tender_model.dart';
 import 'package:intl/intl.dart';
+import 'package:frontend/models/purchase_request_model.dart';
 
-class PurchaseRequestDetailsScreen extends StatelessWidget {
+class PurchaseRequestDetailsScreen extends StatefulWidget {
   final PurchaseRequestModel request;
-  const PurchaseRequestDetailsScreen({super.key, required this.request});
+
+  const PurchaseRequestDetailsScreen({Key? key, required this.request})
+    : super(key: key);
+
+  @override
+  State<PurchaseRequestDetailsScreen> createState() =>
+      _PurchaseRequestDetailsScreenState();
+}
+
+class _PurchaseRequestDetailsScreenState
+    extends State<PurchaseRequestDetailsScreen> {
+  final TextEditingController _rejectionReasonController =
+      TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final statusColor = _getStatusColor(request.status);
-    final statusText = request.status != null
-        ? statusToString(request.status!)
+    final statusColor = _getStatusColor(widget.request.status);
+    final statusText = widget.request.status != null
+        ? statusToString(widget.request.status!)
         : 'Unknown';
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Purchase Request Details'),
-        actions: [
-          if (request.status == Status.pending)
-            IconButton(
-              icon: const Icon(Icons.more_vert),
-              onPressed: () {
-                _showActionMenu(context);
-              },
-            ),
-        ],
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        title: Text(
+          "Purchase Requests Details",
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            color: Theme.of(context).colorScheme.onSurface,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header Card
-            Card(
-              elevation: 2,
-              shape: RoundedRectangleBorder(
+            // Status Header
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: statusColor.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: statusColor.withOpacity(0.3)),
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Request #${request.id?.substring(0, 8) ?? 'N/A'}',
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            color: colorScheme.onSurface.withOpacity(0.7),
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: statusColor.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: statusColor.withOpacity(0.3),
-                            ),
-                          ),
-                          child: Text(
-                            statusText.toUpperCase(),
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: statusColor,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 0.5,
-                            ),
-                          ),
-                        ),
-                      ],
+              child: Column(
+                children: [
+                  Text(
+                    'REQUEST ${statusText.toUpperCase()}',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      color: statusColor,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2,
                     ),
-                    const SizedBox(height: 8),
+                  ),
+                  const SizedBox(height: 4),
+                  if (widget.request.createdAt != null)
                     Text(
-                      _getAdvertisementTitle(request.advertisement),
-                      style: theme.textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: colorScheme.onSurface,
+                      'Created: ${DateFormat('MMM dd, yyyy - hh:mm a').format(widget.request.createdAt!)}',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurface.withOpacity(0.6),
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    if (request.createdAt != null)
-                      Text(
-                        'Created: ${DateFormat('MMM dd, yyyy - hh:mm a').format(request.createdAt!)}',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: colorScheme.onSurface.withOpacity(0.6),
-                        ),
-                      ),
-                  ],
-                ),
+                ],
               ),
             ),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
 
-            // Order Details Card
+            // Order Summary
+            Text(
+              'Order Summary',
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 12),
             Card(
               elevation: 2,
               shape: RoundedRectangleBorder(
@@ -109,73 +93,98 @@ class PurchaseRequestDetailsScreen extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Order Details',
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+                    _buildSummaryRow(
+                      'Request ID',
+                      '#${widget.request.id?.substring(0, 8) ?? 'N/A'}',
+                      colorScheme,
                     ),
-                    const SizedBox(height: 16),
-                    _buildDetailRow(
-                      icon: Icons.scale,
-                      label: 'Quantity',
-                      value:
-                          '${request.quantity} ${_getUnitText(request.unit)}',
-                      colorScheme: colorScheme,
+                    const Divider(),
+                    _buildSummaryRow(
+                      'Product',
+                      widget.request.advertisementName,
+                      colorScheme,
                     ),
-                    const SizedBox(height: 12),
-                    if (request.pricePerUnit != null)
-                      _buildDetailRow(
-                        icon: Icons.attach_money,
-                        label: 'Price per unit',
-                        value: '\$${request.pricePerUnit!.toStringAsFixed(2)}',
-                        colorScheme: colorScheme,
+                    const Divider(),
+                    _buildSummaryRow(
+                      'Quantity',
+                      '${widget.request.quantity} ${_getUnitText(widget.request.unit)}',
+                      colorScheme,
+                    ),
+                    const Divider(),
+                    if (widget.request.pricePerUnit != null)
+                      _buildSummaryRow(
+                        'Price per unit',
+                        'LKR ${widget.request.pricePerUnit!.toStringAsFixed(2)}',
+                        colorScheme,
                       ),
-                    const SizedBox(height: 12),
-                    if (request.totalPrice != null)
-                      _buildDetailRow(
-                        icon: Icons.payments,
-                        label: 'Total price',
-                        value: '\$${request.totalPrice!.toStringAsFixed(2)}',
-                        colorScheme: colorScheme,
+                    if (widget.request.pricePerUnit != null) const Divider(),
+                    if (widget.request.totalPrice != null)
+                      _buildSummaryRow(
+                        'Total Amount',
+                        'LKR ${widget.request.totalPrice!.toStringAsFixed(2)}',
+                        colorScheme,
                         isHighlighted: true,
                       ),
-                    const SizedBox(height: 12),
-                    _buildDetailRow(
-                      icon: Icons.inventory,
-                      label: 'Import required',
-                      value: request.wantToImportThem == true ? 'Yes' : 'No',
-                      colorScheme: colorScheme,
+                    const Divider(),
+                    _buildSummaryRow(
+                      'Import Required',
+                      widget.request.wantToImportThem == true ? 'Yes' : 'No',
+                      colorScheme,
                     ),
                   ],
                 ),
               ),
             ),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
 
-            // Delivery Information Card
-            if (request.deliveryLocation != null)
-              Card(
-                elevation: 2,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Delivery Information',
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
+            // Advertisement Details
+            Text(
+              'Advertisement Details',
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 12),
+            _buildAdvertisementCard(context, widget.request.advertisement),
+
+            const SizedBox(height: 20),
+
+            // Customer Details
+            Text(
+              'Customer Details',
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 12),
+            _buildCustomerCard(context, widget.request.buyerId),
+
+            const SizedBox(height: 20),
+
+            // Delivery Information (if available)
+            if (widget.request.advertisement is Map &&
+                widget.request.advertisement['deliveryAvailable'] == true &&
+                widget.request.deliveryLocation != null)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Delivery Information',
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Card(
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Icon(
@@ -185,22 +194,35 @@ class PurchaseRequestDetailsScreen extends StatelessWidget {
                           ),
                           const SizedBox(width: 12),
                           Expanded(
-                            child: Text(
-                              request.deliveryLocation!,
-                              style: theme.textTheme.bodyMedium,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Delivery to:',
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: colorScheme.onSurface.withOpacity(
+                                      0.6,
+                                    ),
+                                  ),
+                                ),
+                                Text(
+                                  widget.request.deliveryLocation!,
+                                  style: theme.textTheme.bodyMedium,
+                                ),
+                              ],
                             ),
                           ),
                         ],
                       ),
-                    ],
+                    ),
                   ),
-                ),
+                ],
               ),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
 
             // Rejection Reason (if applicable)
-            if (request.rejectionStatus != null)
+            if (widget.request.rejectionStatus != null)
               Card(
                 elevation: 2,
                 color: Colors.red.withOpacity(0.05),
@@ -228,7 +250,7 @@ class PurchaseRequestDetailsScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        request.rejectionStatus!,
+                        widget.request.rejectionStatus!,
                         style: theme.textTheme.bodyMedium,
                       ),
                     ],
@@ -236,16 +258,16 @@ class PurchaseRequestDetailsScreen extends StatelessWidget {
                 ),
               ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: 10),
 
-            // Action Buttons (for pending requests)
-            if (request.status == Status.pending)
+            // Action Buttons (for seller and pending requests)
+            if (widget.request.status == Status.pending)
               Row(
                 children: [
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () {
-                        _handleAction(context, 'reject');
+                        _showRejectionDialog(context);
                       },
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.red,
@@ -259,10 +281,11 @@ class PurchaseRequestDetailsScreen extends StatelessWidget {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
-                        _handleAction(context, 'accept');
+                        _acceptRequest(context);
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: colorScheme.primary,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: colorScheme.primary,
+                        side: const BorderSide(color: Colors.green),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
                       child: const Text('Accept'),
@@ -270,40 +293,318 @@ class PurchaseRequestDetailsScreen extends StatelessWidget {
                   ),
                 ],
               ),
+
+            const SizedBox(height: 20),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildDetailRow({
-    required IconData icon,
-    required String label,
-    required String value,
-    required ColorScheme colorScheme,
+  Widget _buildSummaryRow(
+    String label,
+    String value,
+    ColorScheme colorScheme, {
     bool isHighlighted = false,
   }) {
-    return Row(
-      children: [
-        Icon(icon, size: 20, color: colorScheme.primary),
-        const SizedBox(width: 12),
-        Expanded(
-          flex: 2,
-          child: Text(
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
             label,
             style: TextStyle(color: colorScheme.onSurface.withOpacity(0.7)),
           ),
-        ),
-        Expanded(
-          flex: 3,
-          child: Text(
+          Text(
             value,
             style: TextStyle(
               fontWeight: isHighlighted ? FontWeight.bold : FontWeight.normal,
               color: isHighlighted ? colorScheme.primary : null,
               fontSize: isHighlighted ? 16 : null,
             ),
-            textAlign: TextAlign.right,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAdvertisementCard(BuildContext context, dynamic advertisement) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    if (advertisement is! Map<String, dynamic>) {
+      return Card(
+        elevation: 2,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: const Padding(
+          padding: EdgeInsets.all(16),
+          child: Text('Advertisement details not available'),
+        ),
+      );
+    }
+
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              advertisement['name'] ?? 'No Name',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            if (advertisement['description'] != null)
+              Text(
+                advertisement['description'],
+                style: theme.textTheme.bodyMedium,
+              ),
+            const SizedBox(height: 12),
+            if (advertisement['images'] != null &&
+                advertisement['images'].isNotEmpty)
+              Container(
+                height: 150,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  image: DecorationImage(
+                    image: NetworkImage(advertisement['images'][0]),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Icon(
+                  Icons.location_on,
+                  size: 16,
+                  color: colorScheme.onSurface.withOpacity(0.6),
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  advertisement['location'] ?? 'Location not specified',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurface.withOpacity(0.7),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Icon(
+                  Icons.local_shipping,
+                  size: 16,
+                  color: colorScheme.onSurface.withOpacity(0.6),
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  advertisement['deliveryAvailable'] == true
+                      ? 'Delivery Available'
+                      : 'No Delivery',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurface.withOpacity(0.7),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCustomerCard(BuildContext context, dynamic buyer) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    if (buyer is! Map<String, dynamic>) {
+      return Card(
+        elevation: 3,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.person_off,
+                  size: 40,
+                  color: colorScheme.onSurface.withOpacity(0.3),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Customer details not available',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurface.withOpacity(0.5),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      shadowColor: colorScheme.primary.withOpacity(0.2),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header with avatar and name
+            Row(
+              children: [
+                Container(
+                  width: 50,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: colorScheme.primary.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: colorScheme.primary.withOpacity(0.3),
+                      width: 2,
+                    ),
+                  ),
+                  child: Icon(
+                    Icons.person,
+                    size: 30,
+                    color: colorScheme.primary,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${buyer['firstName']} ${buyer['lastName']}',
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: colorScheme.onSurface,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Buyer',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onSurface.withOpacity(0.6),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 20),
+            const Divider(height: 1),
+            const SizedBox(height: 16),
+
+            // Contact Information Section
+            Text(
+              'CONTACT INFORMATION',
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: colorScheme.onSurface.withOpacity(0.5),
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.8,
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            _buildCustomerDetailRow(
+              Icons.phone,
+              'Phone',
+              buyer['phone'] ?? 'Not provided',
+              colorScheme,
+            ),
+            const SizedBox(height: 12),
+
+            _buildCustomerDetailRow(
+              Icons.email,
+              'Email',
+              buyer['email'] ?? 'Not provided',
+              colorScheme,
+            ),
+
+            const SizedBox(height: 20),
+            const Divider(height: 1),
+            const SizedBox(height: 16),
+
+            // Location Section
+            Text(
+              'LOCATION',
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: colorScheme.onSurface.withOpacity(0.5),
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.8,
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            _buildCustomerDetailRow(
+              Icons.location_on,
+              'Address',
+              buyer['location'] ?? 'Location not provided',
+              colorScheme,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCustomerDetailRow(
+    IconData icon,
+    String label,
+    String value,
+    ColorScheme colorScheme,
+  ) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: 36,
+          height: 36,
+          decoration: BoxDecoration(
+            color: colorScheme.primary.withOpacity(0.08),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon, size: 18, color: colorScheme.primary),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  color: colorScheme.onSurface.withOpacity(0.6),
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: colorScheme.onSurface.withOpacity(0.9),
+                ),
+              ),
+            ],
           ),
         ),
       ],
@@ -327,13 +628,6 @@ class PurchaseRequestDetailsScreen extends StatelessWidget {
     }
   }
 
-  String _getAdvertisementTitle(dynamic advertisement) {
-    if (advertisement == null) return 'Unknown Product';
-    if (advertisement is Map) return advertisement['title'] ?? 'Product';
-    if (advertisement is String) return advertisement;
-    return 'Product';
-  }
-
   String _getUnitText(Units? unit) {
     if (unit == null) return 'units';
     return unitsToString(unit);
@@ -351,15 +645,7 @@ class PurchaseRequestDetailsScreen extends StatelessWidget {
                 title: const Text('Cancel Request'),
                 onTap: () {
                   Navigator.pop(context);
-                  _handleAction(context, 'cancel');
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.edit),
-                title: const Text('Edit Request'),
-                onTap: () {
-                  Navigator.pop(context);
-                  // Navigate to edit screen
+                  _cancelRequest(context);
                 },
               ),
             ],
@@ -369,16 +655,64 @@ class PurchaseRequestDetailsScreen extends StatelessWidget {
     );
   }
 
-  void _handleAction(BuildContext context, String action) {
-    // Handle different actions here
+  void _showRejectionDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(
-            '${action[0].toUpperCase()}${action.substring(1)} Request',
+          title: const Text('Reject Request'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Please provide a reason for rejection:'),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _rejectionReasonController,
+                decoration: const InputDecoration(
+                  hintText: 'Enter rejection reason',
+                  border: OutlineInputBorder(),
+                ),
+                maxLines: 3,
+              ),
+            ],
           ),
-          content: Text('Are you sure you want to $action this request?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                if (_rejectionReasonController.text.trim().isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Please provide a rejection reason'),
+                    ),
+                  );
+                  return;
+                }
+                Navigator.pop(context);
+                _rejectRequest(context, _rejectionReasonController.text);
+              },
+              child: const Text('Reject'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _acceptRequest(BuildContext context) {
+    // Implement accept request logic
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Accept Request'),
+          content: const Text(
+            'Are you sure you want to accept this purchase request?',
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -387,16 +721,64 @@ class PurchaseRequestDetailsScreen extends StatelessWidget {
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
-                // Process the action
+                // Process acceptance
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Request $action successfully')),
+                  const SnackBar(
+                    content: Text('Request accepted successfully'),
+                  ),
                 );
               },
-              child: Text(action[0].toUpperCase() + action.substring(1)),
+              child: const Text('Accept'),
             ),
           ],
         );
       },
     );
+  }
+
+  void _rejectRequest(BuildContext context, String reason) {
+    // Implement reject request logic with reason
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Request rejected. Reason: $reason')),
+    );
+  }
+
+  void _cancelRequest(BuildContext context) {
+    // Implement cancel request logic
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Cancel Request'),
+          content: const Text(
+            'Are you sure you want to cancel this purchase request?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('No'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                // Process cancellation
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Request cancelled successfully'),
+                  ),
+                );
+              },
+              child: const Text('Yes'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _rejectionReasonController.dispose();
+    super.dispose();
   }
 }
