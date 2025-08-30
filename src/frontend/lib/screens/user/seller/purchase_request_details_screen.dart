@@ -633,71 +633,157 @@ class _PurchaseRequestDetailsScreenState
     return unitsToString(unit);
   }
 
-  void _showActionMenu(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return SafeArea(
-          child: Wrap(
-            children: [
-              ListTile(
-                leading: const Icon(Icons.cancel),
-                title: const Text('Cancel Request'),
-                onTap: () {
-                  Navigator.pop(context);
-                  _cancelRequest(context);
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
   void _showRejectionDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Reject Request'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text('Please provide a reason for rejection:'),
-              const SizedBox(height: 16),
-              TextField(
-                controller: _rejectionReasonController,
-                decoration: const InputDecoration(
-                  hintText: 'Enter rejection reason',
-                  border: OutlineInputBorder(),
-                ),
-                maxLines: 3,
-              ),
-            ],
+        final theme = Theme.of(context);
+        final colorScheme = theme.colorScheme;
+
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                if (_rejectionReasonController.text.trim().isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Please provide a rejection reason'),
+          elevation: 4,
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header
+                Row(
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: Colors.red.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(Icons.cancel, color: Colors.red, size: 24),
                     ),
-                  );
-                  return;
-                }
-                Navigator.pop(context);
-                _rejectRequest(context, _rejectionReasonController.text);
-              },
-              child: const Text('Reject'),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'Reject Purchase Request',
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 16),
+                const Divider(height: 1),
+                const SizedBox(height: 16),
+
+                // Instruction
+                Text(
+                  'Please provide a reason for rejecting this request:',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurface.withOpacity(0.7),
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                // Reason Input
+                Container(
+                  decoration: BoxDecoration(
+                    color: colorScheme.surfaceVariant.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: TextField(
+                    controller: _rejectionReasonController,
+                    decoration: InputDecoration(
+                      hintText: 'Enter your reason here...',
+                      hintStyle: TextStyle(
+                        color: colorScheme.onSurface.withOpacity(0.4),
+                      ),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.all(16),
+                    ),
+                    maxLines: 4,
+                    style: theme.textTheme.bodyMedium,
+                    autofocus: true,
+                  ),
+                ),
+
+                const SizedBox(height: 8),
+
+                // Character count/validation hint
+                Text(
+                  'Please provide a clear reason to help the buyer understand your decision',
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: colorScheme.onSurface.withOpacity(0.5),
+                  ),
+                ),
+
+                const SizedBox(height: 24),
+
+                // Fixed Buttons with Expanded
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.pop(context),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: colorScheme.onSurface,
+                          side: BorderSide(
+                            color: colorScheme.outline.withOpacity(0.3),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: const Text('Cancel'),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          if (_rejectionReasonController.text.trim().isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: const Text(
+                                  'Please provide a rejection reason',
+                                ),
+                                backgroundColor: Colors.red,
+                                behavior: SnackBarBehavior.floating,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                            );
+                            return;
+                          }
+                          Navigator.pop(context);
+                          _rejectRequest(
+                            context,
+                            _rejectionReasonController.text,
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: const Text('Reject'),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-          ],
+          ),
         );
       },
     );
@@ -740,39 +826,6 @@ class _PurchaseRequestDetailsScreenState
     // Implement reject request logic with reason
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Request rejected. Reason: $reason')),
-    );
-  }
-
-  void _cancelRequest(BuildContext context) {
-    // Implement cancel request logic
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Cancel Request'),
-          content: const Text(
-            'Are you sure you want to cancel this purchase request?',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('No'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                // Process cancellation
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Request cancelled successfully'),
-                  ),
-                );
-              },
-              child: const Text('Yes'),
-            ),
-          ],
-        );
-      },
     );
   }
 

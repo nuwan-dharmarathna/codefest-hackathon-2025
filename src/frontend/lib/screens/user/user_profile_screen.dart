@@ -118,6 +118,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                           child: Image.asset(
                             "assets/icons/user.png",
                             width: MediaQuery.of(context).size.width * 0.25,
+                            color: Theme.of(context).colorScheme.primary,
                             fit: BoxFit.contain,
                             errorBuilder: (context, error, stackTrace) => Icon(
                               Icons.person,
